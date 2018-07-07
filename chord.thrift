@@ -1,5 +1,4 @@
-
-
+include "shared.thrift"
 typedef string UserID
 
 exception SystemException {
