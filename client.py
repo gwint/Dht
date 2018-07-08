@@ -24,35 +24,42 @@ import glob
 sys.path.append('gen-py')
 sys.path.insert(0, glob.glob('/home/yaoliu/src_code/local/lib/lib/python2.7/site-packages')[0])
 
-from tutorial import Calculator
-from tutorial.ttypes import InvalidOperation, Operation, Work
+from chord import FileStore
+from chord.ttypes import RFile, RFileMetadata, NodeID, SystemException
 
 from thrift import Thrift
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
+import hashlib
 
 def main():
     # Make socket
-    transport = TSocket.TSocket('localhost', 9090)
+    transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9900)
     # Buffering is critical. Raw sockets are very slow
     transport = TTransport.TBufferedTransport(transport)
     # Wrap in a protocol
     protocol = TBinaryProtocol.TBinaryProtocol(transport)
     # Create a client to use the protocol encoder
-    client = Calculator.Client(protocol)
+    client = FileStore.Client(protocol)
     # Connect!
     transport.open()
 
-    client.ping()
-    print('ping()')
+    meta_obj = RFileMetadata()
+    meta_obj.filename = "book.txt"
+    meta_obj.version = 0
+    meta_obj.owner = "Brad"
+    meta_obj.contentHash = hashlib.sha256(meta_obj.filename +\
+                            ":" + meta_obj.owner).hexdigest()
 
-    try:
-      pass
-    except InvalidOperation as e:
-      print('InvalidOperation: %r' % e)
-
+    content_str = "Knowledge Bitch!"
+    file_obj = RFile()
+    file_obj.meta = meta_obj
+    file_obj.content = content_str
+    ##client.writeFile(file_obj)
+    key = "9dcf32d7d7f32610bd4736dd701ea6a95a94c103262a54024cf9803c8974b67b"
+    print(client.findPred(key))
     # Close!
     transport.close()
 

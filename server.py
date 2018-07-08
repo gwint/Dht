@@ -36,6 +36,9 @@ import hashlib
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
+NODE_ID = 0
+SUCC_ID = 1
+ITEM_ID = 2
 
 class ChordHandler:
     def __init__(self):
@@ -46,6 +49,7 @@ class ChordHandler:
         ipAddr = gethostbyname(gethostname())
         idStr = gethostbyname(gethostname()) + ":" + sys.argv[1]
         key = hashlib.sha256(idStr).hexdigest()
+        print(key)
         self.myNode.ip = ipAddr
         self.myNode.port = port
         self.myNode.id = key
@@ -80,8 +84,6 @@ class ChordHandler:
                             ":" + file_owner).hexdigest()
       ## TODO::FIX
       succ = self.findSucc(hash)
-      #print("succ id: ", succ.id)
-      #print("my id: ", self.myNode.id)
       if(succ.id != self.myNode.id):
         raise SystemException("Cannot Read: Server does not own this file!")
 
@@ -90,44 +92,62 @@ class ChordHandler:
           return obj
       raise SystemException("Hash not found: Check owner or file name!")
 
+    def showFingertable(self, a_list):
+      for entry in a_list:
+        print "port: ", entry.port
+
     def setFingertable(self, n_list):
       self.fingerTable = n_list
+      self.showFingertable(self.fingerTable)
 
     def getNodeSucc(self):
       if not self.fingerTable:
         raise SystemException("Error: No successors, fingertable empty!")
       return self.fingerTable[0]
 
+    '''
+    Returns: True if key_1 is after key_2 in clockwise order, False otherwise.
+    Params: key_1 (int) - integer representing sha-256 hash
+    Params: key_2 (int) - integer representing sha-256 hash
+    '''
+    def contains(self, item, lower_bound, upper_bound):
+      case_1 = (lower_bound < item and item < upper_bound)
+      case_2 = (item < upper_bound and upper_bound < lower_bound)
+      case_3 = (upper_bound < lower_bound and lower_bound < item)
+
+      return case_1 or case_2 or case_3
+
     def findPred(self, key):
-      succNode = self.getNodeSucc()
       if not self.fingerTable:
         raise SystemExcetion("Error: No predecessors, fingertable empty!")
-      return None
+
+      for i in range(len(self.fingerTable)-1, -1):
+        if(self.contains(self.fingerTable[i], self.myNode.id, key)):
+          return self.fingerTable[i]
+      return self.myNode
 
     def findSucc(self, key):
       if not self.fingerTable:
         raise SystemException("Error: No fingertable!")
 
-      if key == self.myNode.id:
-        return self.myNode
+      if key == self.fingerTable[0]:
+        return self.fingerTable[0]
+
+      if(self.contains(key, self.myNode.id, self.fingerTable[0])):
+        return self.fingerTable[0]
 
       pred = self.findPred(key)
-      succ = self.fingerTable[0]
 
-      if pred.id == key:
-        return pred
+      transport = TSocket.TSocket(pred.ip, str(pred.port))
+      # Buffering is critical. Raw sockets are very slow
+      transport = TTransport.TBufferedTransport(transport)
+      # Wrap in a protocol
+      protocol = TBinaryProtocol.TBinaryProtocol(transport)
+      # Create a client to use the protocol encoder
+      client = FileStore.Client(protocol)
+      transport.open()
 
-      if pred.id != self.myNode.id:
-        transport = TSocket.TSocket(pred.ip, str(pred.port))
-        # Buffering is critical. Raw sockets are very slow
-        transport = TTransport.TBufferedTransport(transport)
-        # Wrap in a protocol
-        protocol = TBinaryProtocol.TBinaryProtocol(transport)
-        # Create a client to use the protocol encoder
-        client = FileStore.Client(protocol)
-        transport.open()
-
-        succ = client.getNodeSucc()
+      succ = client.getNodeSucc()
 
       return succ
 
