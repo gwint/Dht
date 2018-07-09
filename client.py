@@ -36,7 +36,7 @@ import hashlib
 
 def main():
     # Make socket
-    transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9900)
+    transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
     # Buffering is critical. Raw sockets are very slow
     transport = TTransport.TBufferedTransport(transport)
     # Wrap in a protocol
@@ -58,7 +58,7 @@ def main():
     file_obj.meta = meta_obj
     file_obj.content = content_str
     ##client.writeFile(file_obj)
-    key = "9dcf32d7d7f32610bd4736dd701ea6a95a94c103262a54024cf9803c8974b67b"
+    key = "42e197b31ef421e4b7995324fd8fa7ce9f781e32002c65ba86dbabade24aec83"
     print(client.findPred(key))
     # Close!
     transport.close()

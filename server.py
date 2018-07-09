@@ -121,8 +121,15 @@ class ChordHandler:
       if not self.fingerTable:
         raise SystemExcetion("Error: No predecessors, fingertable empty!")
 
-      for i in range(len(self.fingerTable)-1, -1):
-        if(self.contains(self.fingerTable[i], self.myNode.id, key)):
+      for i in range(len(self.fingerTable)-1, -1, -1):
+        print(int(self.fingerTable[i].id, 16))
+        print(int(self.myNode.id, 16))
+        print(int(key, 16))
+        print("---------------------------------------------------")
+
+        if(self.contains(int(self.fingerTable[i].id, 16),\
+                         int(self.myNode.id, 16),\
+                         int(key, 16))):
           return self.fingerTable[i]
       return self.myNode
 
