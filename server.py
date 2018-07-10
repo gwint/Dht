@@ -121,16 +121,33 @@ class ChordHandler:
       if not self.fingerTable:
         raise SystemExcetion("Error: No predecessors, fingertable empty!")
 
+      closest_node = None
+
       for i in range(len(self.fingerTable)-1, -1, -1):
-        print(int(self.fingerTable[i].id, 16))
-        print(int(self.myNode.id, 16))
-        print(int(key, 16))
+        print self.fingerTable[i].id
+        print self.myNode.id
+        print key
         print("---------------------------------------------------")
 
         if(self.contains(int(self.fingerTable[i].id, 16),\
                          int(self.myNode.id, 16),\
                          int(key, 16))):
-          return self.fingerTable[i]
+          print "return fingertable entry"
+          closest_node = self.fingerTable[i]
+
+          transport = TSocket.TSocket(closest_node.ip, str(closest_node.port))
+          # Buffering is critical. Raw sockets are very slow
+          transport = TTransport.TBufferedTransport(transport)
+          # Wrap in a protocol
+          protocol = TBinaryProtocol.TBinaryProtocol(transport)
+          # Create a client to use the protocol encoder
+          client = FileStore.Client(protocol)
+          transport.open()
+
+          return client.findPred(key)
+          break
+
+      print "return self"
       return self.myNode
 
     def findSucc(self, key):
