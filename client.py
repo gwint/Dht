@@ -105,25 +105,21 @@ def testPred4():
 
   key_1 = "42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC82"
 
-  res = client.findPred("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC83")
-  print res.port
-  assert res.port == 9000
+  res_1 = client.findPred("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC83")
+  res_2 = client.findPred("CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532023")
+  res_3 = client.findPred("60DE97FE3C29E0EC465924E8CDE1189BF29F73D03495B1E1740A3D10A407FFDE")
+  res_4 = client.findPred("445BE48D4D32D4F22B278A424A430CD533BB5E8D80F5C0B85289D1DFE6A328EC")
+
+  assert res_1.port == 9000
+  assert res_2.port == 9001
+  assert res_3.port == 9002
+  assert res_4.port == 9003
   print "findPred() test 4 passed"
 
   transport.close()
 
 
 def main():
-    # Make socket
-#    transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
-    # Buffering is critical. Raw sockets are very slow
-#    transport = TTransport.TBufferedTransport(transport)
-    # Wrap in a protocol
-#    protocol = TBinaryProtocol.TBinaryProtocol(transport)
-    # Create a client to use the protocol encoder
-#    client = FileStore.Client(protocol)
-    # Connect!
-#    transport.open()
 
 #    meta_obj = RFileMetadata()
 #    meta_obj.filename = "book.txt"
