@@ -134,8 +134,6 @@ def testSucc4():
   print "findSucc() test 4 passed"
   transport.close()
 
-
-
 def testPred1():
   # Make socket
   transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
@@ -247,40 +245,116 @@ def testPred4():
 
   transport.close()
 
+def testReadAfterWrite():
+  # Make socket
+  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  meta_obj = RFileMetadata()
+  meta_obj.filename = "book.txt"
+  meta_obj.version = 0
+  meta_obj.owner = "Brad"
+  meta_obj.contentHash = hashlib.sha256(meta_obj.filename +\
+                              ":" + meta_obj.owner).hexdigest()
+
+  content_str = "Knowledge Bitch!"
+  file_obj = RFile()
+  file_obj.meta = meta_obj
+  file_obj.content = content_str
+
+  client.writeFile(file_obj)
+
+  transport.close()
+
+  # Make socket
+  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  res = client.readFile("book.txt", "Brad")
+
+  print "Read after write successful"
+
+  transport.close()
+
+def testReadAfterWriteError():
+  # Make socket
+  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  meta_obj = RFileMetadata()
+  meta_obj.filename = "book.txt"
+  meta_obj.version = 0
+  meta_obj.owner = "Brad"
+  meta_obj.contentHash = hashlib.sha256(meta_obj.filename +\
+                              ":" + meta_obj.owner).hexdigest()
+
+  content_str = "Knowledge Bitch!"
+  file_obj = RFile()
+  file_obj.meta = meta_obj
+  file_obj.content = content_str
+
+  client.writeFile(file_obj)
+
+  transport.close()
+
+  # Make socket
+  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9001)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  try:
+    res = client.readFile("book.txt", "Brad")
+    print "Read after write error NOT succesful"
+  except SystemException:
+    print "Read after write error successful"
+
+  transport.close()
+
+
+def testWriteAfterWrite():
+  pass
+
 
 def main():
+  testPred1()
+  testPred2()
+  testPred3()
+  testPred4()
 
-#    meta_obj = RFileMetadata()
-#    meta_obj.filename = "book.txt"
-#    meta_obj.version = 0
-#    meta_obj.owner = "Brad"
-#    meta_obj.contentHash = hashlib.sha256(meta_obj.filename +\
-#                            ":" + meta_obj.owner).hexdigest()
+  testSucc1()
+  testSucc2()
+  testSucc3()
+  testSucc4()
 
-#    content_str = "Knowledge Bitch!"
-#    file_obj = RFile()
-#    file_obj.meta = meta_obj
-#    file_obj.content = content_str
-
-    ## Test findPred()
-#    key_2 = "CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532022"
-#    key_3 = "60DE97FE3C29E0EC465924E8CDE1189BF29F73D03495B1E1740A3D10A407FFDD"
-#    key_4 = "445BE48D4D32D4F22B278A424A430CD533BB5E8D80F5C0B85289D1DFE6A328EA"
-
-    ##client.writeFile(file_obj)
-#    key = "42e197b31ef421e4b7995324fd8fa7ce9f781e32002c65ba86dbabade24aec83"
-##    print(client.findPred(key))
-    testPred1()
-    testPred2()
-    testPred3()
-    testPred4()
-
-    testSucc1()
-    testSucc2()
-    testSucc3()
-    testSucc4()
-    # Close!
-#    transport.close()
+  testReadAfterWrite()
+  testReadAfterWriteError()
 
 if __name__ == '__main__':
     try:

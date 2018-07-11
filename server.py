@@ -82,7 +82,6 @@ class ChordHandler:
     def readFile(self, filename, file_owner):
       hash = hashlib.sha256(filename +\
                             ":" + file_owner).hexdigest()
-      ## TODO::FIX
       succ = self.findSucc(hash)
       if(succ.id != self.myNode.id):
         raise SystemException("Cannot Read: Server does not own this file!")
