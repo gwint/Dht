@@ -338,8 +338,117 @@ def testReadAfterWriteError():
   transport.close()
 
 
-def testWriteAfterWrite():
-  pass
+def incorrectOwnerTest():
+  # Make socket
+  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  meta_obj = RFileMetadata()
+  meta_obj.filename = "book.txt"
+  meta_obj.version = 0
+  meta_obj.owner = "Brad"
+  meta_obj.contentHash = hashlib.sha256(meta_obj.filename +\
+                              ":" + meta_obj.owner).hexdigest()
+
+  content_str = "Test String"
+  file_obj = RFile()
+  file_obj.meta = meta_obj
+  file_obj.content = content_str
+
+  client.writeFile(file_obj)
+
+  transport.close()
+
+  # Make socket
+  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  try:
+    res = client.readFile("book.txt", "Drake")
+  except SystemException:
+    print "Success: Incorrect owner"
+
+  transport.close()
+
+def testOverwrite():
+  # Make socket
+  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  meta_obj = RFileMetadata()
+  meta_obj.filename = "book.txt"
+  meta_obj.version = 0
+  meta_obj.owner = "Brad"
+  meta_obj.contentHash = hashlib.sha256(meta_obj.filename +\
+                              ":" + meta_obj.owner).hexdigest()
+
+  content_str = "Test String"
+  file_obj = RFile()
+  file_obj.meta = meta_obj
+  file_obj.content = content_str
+
+  client.writeFile(file_obj)
+
+  transport.close()
+
+  # Make socket
+  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  file_obj.meta.version = file_obj.meta.version + 1
+  file_obj.content = "New Test String"
+
+  client.writeFile(file_obj)
+
+  try:
+    # Make socket
+    transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+    # Buffering is critical. Raw sockets are very slow
+    transport = TTransport.TBufferedTransport(transport)
+    # Wrap in a protocol
+    protocol = TBinaryProtocol.TBinaryProtocol(transport)
+    # Create a client to use the protocol encoder
+    client = FileStore.Client(protocol)
+    # Connect!
+    transport.open()
+
+    res = client.readFile("book.txt", "Brad")
+    assert res.content == "New Test String"
+    assert res.meta.version == 1
+    print "File Overwrite Successful"
+
+  except SystemException:
+    print "Success: Incorrect owner"
+
+  transport.close()
 
 
 def main():
@@ -353,8 +462,10 @@ def main():
   testSucc3()
   testSucc4()
 
+  testOverwrite()
   testReadAfterWrite()
   testReadAfterWriteError()
+  incorrectOwnerTest()
 
 if __name__ == '__main__':
     try:
