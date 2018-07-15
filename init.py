@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, glob
 
-sys.path.insert(0, glob.glob('/home/yaoliu/src_code/local/lib/lib/python2.7/site-packages/')[0])
+sys.path.insert(0, glob.glob('/usr/lib/python2.7/site-packages')[0])
 
 from thrift.transport import TSocket
 from thrift.transport import TTransport
