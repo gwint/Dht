@@ -32,6 +32,7 @@ from socket import gethostbyname, gethostname
 
 import init
 import hashlib
+import socket
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -179,6 +180,9 @@ if __name__ == '__main__':
     # server = TServer.TThreadPoolServer(
     #     processor, transport, tfactory, pfactory)
 
-    print('Starting the server...')
-    server.serve()
-    print('done.')
+    try:
+      print('Starting the server...')
+      server.serve()
+      print('done.')
+    except KeyboardInterrupt:
+      transport.close()

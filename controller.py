@@ -10,7 +10,7 @@ import time
 SERVER_NAME = "Greg's Server"
 
 host = ''
-port = 5555
+port = 9999
 
 def main():
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -25,10 +25,18 @@ def main():
 
   print("Waiting for connections")
 
-  while True:
-    conn, addr = s.accept()
-    for port in range(9000, 9004):
-      Popen(["python", "server.py"] + [str(port)])
+  try:
+    while True:
+      conn, addr = s.accept()
+      for port in range(19000, 19004):
+        Popen(["python", "server.py"] + [str(port)])
+
+      ## Create nodes.txt
+
+      ## Initalize dht
+  except KeyboardInterrupt:
+    s.shutdown(socket.SHUT_RDWR)
+    s.close()
 
 
 main()
