@@ -1,0 +1,15 @@
+#port_entry_area {
+  width: 52%;
+  height: 20%;
+}
+
+#add_port_btn {
+  height: 10%;
+  width: 10%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#added_ports {
+  padding-bottom: 10px;
+}
