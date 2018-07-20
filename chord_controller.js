@@ -31,5 +31,6 @@ jQuery(document).ready(function() {
     let new_contents = curr_contents + "<br>" + new_port;
     alert(new_contents);
     jQuery("#added_ports").html(new_contents);
+    jQuery
   });
 });
