@@ -4,16 +4,27 @@ function create_dht() {
   if(!DHT_CREATED) {
     // Create WebSocket connection.
     const socket = new WebSocket('ws://localhost:9999');
+    console.log("got here though");
 
     // Connection opened
     socket.addEventListener('open', function (event) {
+      console.log("open method called");
       socket.send('Hello Server!');
+      // Send Json object containing port numbers
+      port_list_contents = (jQuery("#added_ports").val()).split("\n");
+      alert(port_list_contents);
+      let ports = {to:"http://localhost",
+                   message:{port_list_contents}};
+      alert(JSON.stringify(ports));
+      socket.send(JSON.stringify(ports));
     });
 
     // Listen for messages
     socket.addEventListener('message', function (event) {
       console.log('Message from server ', event.data);
     });
+
+
 
     DHT_CREATED = true;
   }
@@ -28,9 +39,9 @@ jQuery(document).ready(function() {
   jQuery("#add_port_btn").click(function() {
     let curr_contents = jQuery("#added_ports").text();
     let new_port = jQuery("#port_entry_box").val();
-    let new_contents = curr_contents + "<br>" + new_port;
+    let new_contents = curr_contents + "\n" + new_port;
     alert(new_contents);
-    jQuery("#added_ports").html(new_contents);
-    jQuery
+    jQuery("#added_ports").html(jQuery.trim(new_contents));
+    jQuery("#port_entry_box").val("");
   });
 });
