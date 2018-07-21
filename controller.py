@@ -8,6 +8,9 @@ import os.path
 import time
 import hashlib
 import base64
+import json
+from time import sleep
+import struct
 
 SERVER_NAME = "Greg's Server"
 
@@ -30,32 +33,35 @@ def main():
   try:
     while True:
       conn, addr = s.accept()
-      print(addr)
+      #print(addr)
       init_request = conn.recv(4096)
-      print(init_request)
+      #print(init_request)
 
       request_pieces = init_request.split('\r\n')
-      print(request_pieces[-4])
+      #print(request_pieces[-4])
 
       request_key = request_pieces[-4].split(':')[1].strip()
       new_key = request_key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
       hashed_new_key = hashlib.sha1(new_key).digest()
-      print(hashed_new_key)
+      #print(hashed_new_key)
 
       encoded_hashed_new_key = base64.b64encode(hashed_new_key)
-      print(encoded_hashed_new_key)
+      #print(encoded_hashed_new_key)
 
       response = "HTTP/1.1 101 Switching Protocols\r\n" + \
                  "Upgrade: websocket\r\n" + \
                  "Connection: Upgrade\r\n" + \
                  "Sec-WebSocket-Accept: %s\r\n" % encoded_hashed_new_key + \
-                 "WebSocket-Origin: http://localhost\r\n\n"
+                 "WebSocket-Origin: http://localhost:9999\r\n\n"
 
       conn.sendall(response)
 
+      conn.settimeout(None)
+      sleep(5)
       ## Form response and send back to client
-      #resp = conn.recv(4096)
-      #print(resp)
+      resp = conn.recv(1024)
+      print(struct.unpack("<L", resp)[0])
+      #print(str(bytes(resp)))
 
       ## Wait to recieve port list from client
 

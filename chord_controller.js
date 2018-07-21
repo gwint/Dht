@@ -16,14 +16,17 @@ function create_dht() {
     // Connection opened
     socket.addEventListener('open', function (event) {
       console.log("open method called");
-      socket.send('Hello Server!');
       // Send Json object containing port numbers
       port_list_contents = (jQuery("#added_ports").val()).split("\n");
       alert(port_list_contents);
       let ports = {to:"http://localhost",
                    message:{port_list_contents}};
-      alert(JSON.stringify(ports));
-      socket.send(JSON.stringify(ports));
+      //alert(JSON.stringify(ports));
+      //socket.send(JSON.stringify(ports));
+      alert(socket.bufferedAmount);
+      socket.send("Hello");
+      alert(socket.bufferedAmount);
+      //alert("type: " + socket.binaryType);
     });
 
     DHT_CREATED = true;
