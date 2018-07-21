@@ -6,6 +6,13 @@ function create_dht() {
     const socket = new WebSocket('ws://localhost:9999');
     console.log("got here though");
 
+    // Listen for messages
+    socket.addEventListener('message', function (event) {
+      alert("received message");
+      console.log('Message from server ', event.data);
+    });
+
+
     // Connection opened
     socket.addEventListener('open', function (event) {
       console.log("open method called");
@@ -18,13 +25,6 @@ function create_dht() {
       alert(JSON.stringify(ports));
       socket.send(JSON.stringify(ports));
     });
-
-    // Listen for messages
-    socket.addEventListener('message', function (event) {
-      console.log('Message from server ', event.data);
-    });
-
-
 
     DHT_CREATED = true;
   }
