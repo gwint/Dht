@@ -56,6 +56,15 @@ class ChordHandler:
         self.myNode.id = key
         self.fileData = []
 
+    def addNode(self, host, port):
+      new_node_key = hashlib.sha256(host + ":" + str(port)).hexdigest()
+      ## Make its fingertable (current node to find all answers)
+      new_fingertable = []
+      for i in range(256):
+        ## find successor for given position (new key + i^i-1)
+        pass
+      ## Update other nodes fingertables
+
     def writeFile(self, file_obj):
       file_name = file_obj.meta.filename
 
