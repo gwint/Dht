@@ -58,12 +58,27 @@ class ChordHandler:
 
     def addNode(self, host, port):
       new_node_key = hashlib.sha256(host + ":" + str(port)).hexdigest()
+      ## Need to startup up server.py w/ host and port info
       ## Make its fingertable (current node to find all answers)
       new_fingertable = []
+
       for i in range(256):
-        ## find successor for given position (new key + i^i-1)
-        pass
+        finger_key = (int(new_node_key, 16) + (2^i)) % (2^256)
+        succ = findSucc(finger_key)
+        new_fingertable.append(findSucc(finger_key))
+
       ## Update other nodes fingertables
+      transport = TSocket.TSocket(host, port)
+      # Buffering is critical. Raw sockets are very slow
+      transport = TTransport.TBufferedTransport(transport)
+      # Wrap in a protocol
+      protocol = TBinaryProtocol.TBinaryProtocol(transport)
+      # Create a client to use the protocol encoder
+      client = FileStore.Client(protocol)
+      transport.open()
+
+      client.setFingertable(new_fingertable)
+
 
     def writeFile(self, file_obj):
       file_name = file_obj.meta.filename
