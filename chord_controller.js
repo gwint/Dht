@@ -4,14 +4,10 @@ function create_dht() {
   if(!DHT_CREATED) {
     // Create WebSocket connection.
     const socket = new WebSocket('ws://localhost:9999');
-    console.log("got here though");
 
     // Listen for messages
     socket.addEventListener('message', function (event) {
-      alert("received message");
-      console.log('Message from server ', event.data);
     });
-
 
     // Connection opened
     socket.addEventListener('open', function (event) {

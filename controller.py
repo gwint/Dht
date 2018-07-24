@@ -10,7 +10,6 @@ import base64
 import asyncio
 import websockets
 
-SERVER_NAME = "Greg's Server"
 NODES_FILE = "nodes.txt"
 HOST = "localhost"
 PORT = 9999
@@ -19,7 +18,7 @@ def create_nodes_file(port_list):
   nodes_file_obj = open(NODES_FILE, 'w')
 
   for port in port_list:
-    nodes_file_obj.write(host
+    nodes_file_obj.write("%s:%d\n" % (HOST, port))
 
   nodes_file_obj.close()
 
@@ -29,6 +28,8 @@ async def control(websocket, path):
 
   port_list = list(map(int, port_list_str.strip('[]').split(',')))
   print(port_list)
+
+  create_nodes_file(port_list)
 
   for port in port_list:
     Popen(["python", "server.py"] + [str(port)])
