@@ -37,9 +37,12 @@ import hashlib
 ## Must look in nodes.txt to get ports being used
 ## Controller.py is going to create nodes.txt which will be read here
 
-def testSucc1():
+def generate_tests(host, port_list):
+  pass
+
+def testSucc(host, port):
   # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  transport = TSocket.TSocket(host, port)
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -59,12 +62,12 @@ def testSucc1():
   assert res_3.port == 9002
   assert res_4.port == 9003
 
-  print "findSucc() test 1 passed"
+  print "findSucc() test passed"
   transport.close()
 
-def testSucc2():
+def testPred(host, port):
   # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9001)
+  transport = TSocket.TSocket(host, port)
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -73,83 +76,6 @@ def testSucc2():
   client = FileStore.Client(protocol)
   # Connect!
   transport.open()
-
-  res_1 = client.findSucc("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC81")
-  res_2 = client.findSucc("CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532021")
-  res_3 = client.findSucc("60DE97FE3C29E0EC465924E8CDE1189BF29F73D03495B1E1740A3D10A407FFDC")
-  res_4 = client.findSucc("445BE48D4D32D4F22B278A424A430CD533BB5E8D80F5C0B85289D1DFE6A328E9")
-
-  assert res_1.port == 9000
-  assert res_2.port == 9001
-  assert res_3.port == 9002
-  assert res_4.port == 9003
-
-  print "findSucc() test 2 passed"
-  transport.close()
-
-def testSucc3():
-  # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9002)
-  # Buffering is critical. Raw sockets are very slow
-  transport = TTransport.TBufferedTransport(transport)
-  # Wrap in a protocol
-  protocol = TBinaryProtocol.TBinaryProtocol(transport)
-  # Create a client to use the protocol encoder
-  client = FileStore.Client(protocol)
-  # Connect!
-  transport.open()
-
-  res_1 = client.findSucc("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC81")
-  res_2 = client.findSucc("CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532021")
-  res_3 = client.findSucc("60DE97FE3C29E0EC465924E8CDE1189BF29F73D03495B1E1740A3D10A407FFDC")
-  res_4 = client.findSucc("445BE48D4D32D4F22B278A424A430CD533BB5E8D80F5C0B85289D1DFE6A328E9")
-
-  assert res_1.port == 9000
-  assert res_2.port == 9001
-  assert res_3.port == 9002
-  assert res_4.port == 9003
-
-  print "findSucc() test 3 passed"
-  transport.close()
-
-def testSucc4():
-  # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9003)
-  # Buffering is critical. Raw sockets are very slow
-  transport = TTransport.TBufferedTransport(transport)
-  # Wrap in a protocol
-  protocol = TBinaryProtocol.TBinaryProtocol(transport)
-  # Create a client to use the protocol encoder
-  client = FileStore.Client(protocol)
-  # Connect!
-  transport.open()
-
-  res_1 = client.findSucc("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC81")
-  res_2 = client.findSucc("CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532021")
-  res_3 = client.findSucc("60DE97FE3C29E0EC465924E8CDE1189BF29F73D03495B1E1740A3D10A407FFDC")
-  res_4 = client.findSucc("445BE48D4D32D4F22B278A424A430CD533BB5E8D80F5C0B85289D1DFE6A328E9")
-
-  assert res_1.port == 9000
-  assert res_2.port == 9001
-  assert res_3.port == 9002
-  assert res_4.port == 9003
-
-  print "findSucc() test 4 passed"
-  transport.close()
-
-def testPred1():
-  # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
-  # Buffering is critical. Raw sockets are very slow
-  transport = TTransport.TBufferedTransport(transport)
-  # Wrap in a protocol
-  protocol = TBinaryProtocol.TBinaryProtocol(transport)
-  # Create a client to use the protocol encoder
-  client = FileStore.Client(protocol)
-  # Connect!
-  transport.open()
-
-  key_1 = "42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC82"
 
   res_1 = client.findPred("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC83")
   res_2 = client.findPred("CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532023")
@@ -161,90 +87,7 @@ def testPred1():
   assert res_3.port == 9002
   assert res_4.port == 9003
 
-  print "findPred() test 1 passed"
-
-  transport.close()
-
-def testPred2():
-  # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9001)
-  # Buffering is critical. Raw sockets are very slow
-  transport = TTransport.TBufferedTransport(transport)
-  # Wrap in a protocol
-  protocol = TBinaryProtocol.TBinaryProtocol(transport)
-  # Create a client to use the protocol encoder
-  client = FileStore.Client(protocol)
-  # Connect!
-  transport.open()
-
-  key_1 = "42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC82"
-
-  res_1 = client.findPred("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC83")
-  res_2 = client.findPred("CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532023")
-  res_3 = client.findPred("60DE97FE3C29E0EC465924E8CDE1189BF29F73D03495B1E1740A3D10A407FFDE")
-  res_4 = client.findPred("445BE48D4D32D4F22B278A424A430CD533BB5E8D80F5C0B85289D1DFE6A328EC")
-
-  assert res_1.port == 9000
-  assert res_2.port == 9001
-  assert res_3.port == 9002
-  assert res_4.port == 9003
-
-  print "findPred() test 2 passed"
-
-  transport.close()
-
-def testPred3():
-  # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9002)
-  # Buffering is critical. Raw sockets are very slow
-  transport = TTransport.TBufferedTransport(transport)
-  # Wrap in a protocol
-  protocol = TBinaryProtocol.TBinaryProtocol(transport)
-  # Create a client to use the protocol encoder
-  client = FileStore.Client(protocol)
-  # Connect!
-  transport.open()
-
-  key_1 = "42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC82"
-
-  res_1 = client.findPred("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC83")
-  res_2 = client.findPred("CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532023")
-  res_3 = client.findPred("60DE97FE3C29E0EC465924E8CDE1189BF29F73D03495B1E1740A3D10A407FFDE")
-  res_4 = client.findPred("445BE48D4D32D4F22B278A424A430CD533BB5E8D80F5C0B85289D1DFE6A328EC")
-
-  assert res_1.port == 9000
-  assert res_2.port == 9001
-  assert res_3.port == 9002
-  assert res_4.port == 9003
-
-  print "findPred() test 3 passed"
-
-  transport.close()
-
-def testPred4():
-  # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9003)
-  # Buffering is critical. Raw sockets are very slow
-  transport = TTransport.TBufferedTransport(transport)
-  # Wrap in a protocol
-  protocol = TBinaryProtocol.TBinaryProtocol(transport)
-  # Create a client to use the protocol encoder
-  client = FileStore.Client(protocol)
-  # Connect!
-  transport.open()
-
-  key_1 = "42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC82"
-
-  res_1 = client.findPred("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC83")
-  res_2 = client.findPred("CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532023")
-  res_3 = client.findPred("60DE97FE3C29E0EC465924E8CDE1189BF29F73D03495B1E1740A3D10A407FFDE")
-  res_4 = client.findPred("445BE48D4D32D4F22B278A424A430CD533BB5E8D80F5C0B85289D1DFE6A328EC")
-
-  assert res_1.port == 9000
-  assert res_2.port == 9001
-  assert res_3.port == 9002
-  assert res_4.port == 9003
-  print "findPred() test 4 passed"
+  print "findPred() test passed"
 
   transport.close()
 
@@ -453,17 +296,16 @@ def testOverwrite():
 
   transport.close()
 
-
 def main():
-  testPred1()
-  testPred2()
-  testPred3()
-  testPred4()
+  testPred("alpha.cs.binghamton.edu", 9000)
+  testPred("alpha.cs.binghamton.edu", 9001)
+  testPred("alpha.cs.binghamton.edu", 9002)
+  testPred("alpha.cs.binghamton.edu", 9003)
 
-  testSucc1()
-  testSucc2()
-  testSucc3()
-  testSucc4()
+  testSucc("alpha.cs.binghamton.edu", 9000)
+  testSucc("alpha.cs.binghamton.edu", 9001)
+  testSucc("alpha.cs.binghamton.edu", 9002)
+  testSucc("alpha.cs.binghamton.edu", 9003)
 
   testOverwrite()
   testReadAfterWrite()
