@@ -22,20 +22,9 @@ function create_dht() {
                                  return parseInt(port_str);
                                });
       alert(port_list_contents);
-<<<<<<< HEAD
-      let ports = {to:"http://localhost",
-                   message:{port_list_contents}};
-      //alert(JSON.stringify(ports));
-      //socket.send(JSON.stringify(ports));
-      alert(socket.bufferedAmount);
-      socket.send("Hello");
-      alert(socket.bufferedAmount);
-      //alert("type: " + socket.binaryType);
-=======
       let ports = port_list_contents;
       alert(JSON.stringify(ports));
       socket.send(JSON.stringify(ports));
->>>>>>> allow_joins
     });
 
     DHT_CREATED = true;

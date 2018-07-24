@@ -34,6 +34,9 @@ from thrift.protocol import TBinaryProtocol
 
 import hashlib
 
+## Must look in nodes.txt to get ports being used
+## Controller.py is going to create nodes.txt which will be read here
+
 def testSucc1():
   # Make socket
   transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)

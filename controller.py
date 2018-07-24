@@ -11,14 +11,19 @@ import asyncio
 import websockets
 
 SERVER_NAME = "Greg's Server"
+NODES_FILE = "nodes.txt"
+HOST = "localhost"
+PORT = 9999
 
-host = ''
-port = 9999
+def create_nodes_file(port_list):
+  nodes_file_obj = open(NODES_FILE, 'w')
+
+  for port in port_list:
+    nodes_file_obj.write(host
+
+  nodes_file_obj.close()
 
 async def control(websocket, path):
-  now = "test"
-  await websocket.send(now)
-
   ## Get port numbers from client
   port_list_str = await websocket.recv()
 
@@ -30,7 +35,7 @@ async def control(websocket, path):
 
 
 def main():
-  start_server = websockets.serve(control, 'localhost', 9999)
+  start_server = websockets.serve(control, 'localhost', PORT)
 
   asyncio.get_event_loop().run_until_complete(start_server)
   asyncio.get_event_loop().run_forever()
