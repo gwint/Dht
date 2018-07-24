@@ -26,6 +26,9 @@ struct NodeID {
 service FileStore extends shared.SharedService {
   void ping(),
 
+  void addNode(1: string host, 2: i32 port)
+    throws (1: SystemException systemException),
+
   void writeFile(1: RFile rFile)
     throws (1: SystemException systemException),
   

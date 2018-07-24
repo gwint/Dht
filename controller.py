@@ -2,21 +2,26 @@ from subprocess import call, Popen
 
 import socket
 import sys
-from thread import *
 from time import strftime, gmtime
 import os.path
 import time
 import hashlib
 import base64
+<<<<<<< HEAD
 import json
 from time import sleep
 import struct
+=======
+import asyncio
+import websockets
+>>>>>>> allow_joins
 
 SERVER_NAME = "Greg's Server"
 
 host = ''
 port = 9999
 
+<<<<<<< HEAD
 def main():
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -53,9 +58,23 @@ def main():
                  "Connection: Upgrade\r\n" + \
                  "Sec-WebSocket-Accept: %s\r\n" % encoded_hashed_new_key + \
                  "WebSocket-Origin: http://localhost:9999\r\n\n"
+=======
+async def control(websocket, path):
+  now = "test"
+  await websocket.send(now)
 
-      conn.sendall(response)
+  ## Get port numbers from client
+  port_list_str = await websocket.recv()
 
+  port_list = list(map(int, port_list_str.strip('[]').split(',')))
+  print(port_list)
+
+  for port in port_list:
+    Popen(["python", "server.py"] + [str(port)])
+>>>>>>> allow_joins
+
+
+<<<<<<< HEAD
       conn.settimeout(None)
       sleep(5)
       ## Form response and send back to client
@@ -74,6 +93,12 @@ def main():
   except KeyboardInterrupt:
     s.shutdown(socket.SHUT_RDWR)
     s.close()
+=======
+def main():
+  start_server = websockets.serve(control, 'localhost', 9999)
+>>>>>>> allow_joins
 
+  asyncio.get_event_loop().run_until_complete(start_server)
+  asyncio.get_event_loop().run_forever()
 
 main()

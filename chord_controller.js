@@ -17,8 +17,12 @@ function create_dht() {
     socket.addEventListener('open', function (event) {
       console.log("open method called");
       // Send Json object containing port numbers
-      port_list_contents = (jQuery("#added_ports").val()).split("\n");
+      port_list_contents = (jQuery("#added_ports").val()).split("\n").map(
+                               function(port_str) {
+                                 return parseInt(port_str);
+                               });
       alert(port_list_contents);
+<<<<<<< HEAD
       let ports = {to:"http://localhost",
                    message:{port_list_contents}};
       //alert(JSON.stringify(ports));
@@ -27,6 +31,11 @@ function create_dht() {
       socket.send("Hello");
       alert(socket.bufferedAmount);
       //alert("type: " + socket.binaryType);
+=======
+      let ports = port_list_contents;
+      alert(JSON.stringify(ports));
+      socket.send(JSON.stringify(ports));
+>>>>>>> allow_joins
     });
 
     DHT_CREATED = true;
