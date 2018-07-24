@@ -2,7 +2,6 @@ from subprocess import call, Popen
 
 import socket
 import sys
-#from thread import *
 from time import strftime, gmtime
 import os.path
 import time
@@ -21,12 +20,12 @@ async def control(websocket, path):
   await websocket.send(now)
 
   ## Get port numbers from client
-  port_list = await websocket.recv()
-  print(port_list)
-  print(type(port_list))
-  print(list(port_list))
+  port_list_str = await websocket.recv()
 
-  for port in range(19000, 19004):
+  port_list = list(map(int, port_list_str.strip('[]').split(',')))
+  print(port_list)
+
+  for port in port_list:
     Popen(["python", "server.py"] + [str(port)])
 
 
