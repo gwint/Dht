@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements. See the NOTICE file
@@ -17,7 +16,6 @@
 # KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
 
 import sys
 import glob
@@ -311,6 +309,6 @@ def main():
 
 if __name__ == '__main__':
     try:
-        main()
+      main()
     except Thrift.TException as tx:
-        print('%s' % tx.message)
+      print('%s' % tx.message)
