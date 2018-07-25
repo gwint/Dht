@@ -22,7 +22,7 @@
 import sys
 import glob
 sys.path.append('gen-py')
-sys.path.insert(0, glob.glob('/home/yaoliu/src_code/local/lib/lib/python2.7/site-packages')[0])
+sys.path.insert(0, glob.glob('/usr/lib/python2.7/site-packages')[0])
 
 from chord import FileStore
 from chord.ttypes import RFile, RFileMetadata, NodeID, SystemException
@@ -35,9 +35,6 @@ from thrift.protocol import TBinaryProtocol
 import hashlib
 
 NODE_INFO_FILE = "nodes.txt"
-
-## Must look in nodes.txt to get ports being used
-## Controller.py is going to create nodes.txt which will be read here
 
 def run_succ_tests(host, port_list):
   def testSucc(query_port):
@@ -53,11 +50,12 @@ def run_succ_tests(host, port_list):
     transport.open()
 
     for port in port_list:
-      hash = hashlib.sha256("%s:%d" % (host, port)).hexdigest()
+      hash = \
+        hashlib.sha256(("%s:%d" % (host, port)).encode("utf-8")).hexdigest()
       decremented_hash_str = hex(int(hash, 16) - 1)[2:]
-      assert client.findSucc(decremented_hash_str) == port
+      assert client.findSucc(decremented_hash_str).id == hash
 
-    print "findSucc(%d) test passed" % query_port
+    print("findSucc(%d) test passed" % query_port)
     transport.close()
 
   for port in port_list:
@@ -77,11 +75,11 @@ def run_pred_tests(host, port_list):
     transport.open()
 
     for port in port_list:
-      hash = hashlib.sha256("%s:%d" % (host, port)).hexdigest()
-      decremented_hash_str = hex(int(hash, 16) + 1)[2:]
-      assert client.findPred(decremented_hash_str) == port
+      hash = hashlib.sha256(("%s:%d" % (host, port)).encode("utf-8")).hexdigest()
+      incremented_hash_str = hex(int(hash, 16) + 1)[2:]
+      assert client.findPred(incremented_hash_str).id == hash
 
-    print "findPred(%d) test passed" % query_port
+    print("findPred(%d) test passed" % query_port)
     transport.close()
 
   for port in port_list:
@@ -128,7 +126,7 @@ def testReadAfterWrite():
 
   res = client.readFile("book.txt", "Brad")
 
-  print "Read after write successful"
+  print("Read after write successful")
 
   transport.close()
 
@@ -173,9 +171,9 @@ def testReadAfterWriteError():
 
   try:
     res = client.readFile("book.txt", "Brad")
-    print "Read after write error NOT succesful"
+    print("Read after write error NOT succesful")
   except SystemException:
-    print "Read after write error successful"
+    print("Read after write error successful")
 
   transport.close()
 
@@ -222,7 +220,7 @@ def incorrectOwnerTest():
   try:
     res = client.readFile("book.txt", "Drake")
   except SystemException:
-    print "Success: Incorrect owner"
+    print("Success: Incorrect owner")
 
   transport.close()
 
@@ -285,10 +283,10 @@ def testOverwrite():
     res = client.readFile("book.txt", "Brad")
     assert res.content == "New Test String"
     assert res.meta.version == 1
-    print "File Overwrite Successful"
+    print("File Overwrite Successful")
 
   except SystemException:
-    print "Success: Incorrect owner"
+    print("Success: Incorrect owner")
 
   transport.close()
 
@@ -306,10 +304,10 @@ def main():
 
   run_pred_tests(host, port_list)
   run_succ_tests(host, port_list)
-  testOverwrite()
-  testReadAfterWrite()
-  testReadAfterWriteError()
-  incorrectOwnerTest()
+  #testOverwrite()
+  #testReadAfterWrite()
+  #testReadAfterWriteError()
+  #incorrectOwnerTest()
 
 if __name__ == '__main__':
     try:
