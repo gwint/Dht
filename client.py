@@ -34,62 +34,58 @@ from thrift.protocol import TBinaryProtocol
 
 import hashlib
 
+NODE_INFO_FILE = "nodes.txt"
+
 ## Must look in nodes.txt to get ports being used
 ## Controller.py is going to create nodes.txt which will be read here
 
-def generate_tests(host, port_list):
-  pass
+def run_succ_tests(host, port_list):
+  def testSucc(query_port):
+    # Make socket
+    transport = TSocket.TSocket(host, query_port)
+    # Buffering is critical. Raw sockets are very slow
+    transport = TTransport.TBufferedTransport(transport)
+    # Wrap in a protocol
+    protocol = TBinaryProtocol.TBinaryProtocol(transport)
+    # Create a client to use the protocol encoder
+    client = FileStore.Client(protocol)
+    # Connect!
+    transport.open()
 
-def testSucc(host, port):
-  # Make socket
-  transport = TSocket.TSocket(host, port)
-  # Buffering is critical. Raw sockets are very slow
-  transport = TTransport.TBufferedTransport(transport)
-  # Wrap in a protocol
-  protocol = TBinaryProtocol.TBinaryProtocol(transport)
-  # Create a client to use the protocol encoder
-  client = FileStore.Client(protocol)
-  # Connect!
-  transport.open()
+    for port in port_list:
+      hash = hashlib.sha256("%s:%d" % (host, port)).hexdigest()
+      decremented_hash_str = hex(int(hash, 16) - 1)[2:]
+      assert client.findSucc(decremented_hash_str) == port
 
-  res_1 = client.findSucc("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC81")
-  res_2 = client.findSucc("CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532021")
-  res_3 = client.findSucc("60DE97FE3C29E0EC465924E8CDE1189BF29F73D03495B1E1740A3D10A407FFDC")
-  res_4 = client.findSucc("445BE48D4D32D4F22B278A424A430CD533BB5E8D80F5C0B85289D1DFE6A328E9")
+    print "findSucc(%d) test passed" % query_port
+    transport.close()
 
-  assert res_1.port == 9000
-  assert res_2.port == 9001
-  assert res_3.port == 9002
-  assert res_4.port == 9003
+  for port in port_list:
+    testSucc(port)
 
-  print "findSucc() test passed"
-  transport.close()
+def run_pred_tests(host, port_list):
+  def testPred(query_port):
+    # Make socket
+    transport = TSocket.TSocket(host, query_port)
+    # Buffering is critical. Raw sockets are very slow
+    transport = TTransport.TBufferedTransport(transport)
+    # Wrap in a protocol
+    protocol = TBinaryProtocol.TBinaryProtocol(transport)
+    # Create a client to use the protocol encoder
+    client = FileStore.Client(protocol)
+    # Connect!
+    transport.open()
 
-def testPred(host, port):
-  # Make socket
-  transport = TSocket.TSocket(host, port)
-  # Buffering is critical. Raw sockets are very slow
-  transport = TTransport.TBufferedTransport(transport)
-  # Wrap in a protocol
-  protocol = TBinaryProtocol.TBinaryProtocol(transport)
-  # Create a client to use the protocol encoder
-  client = FileStore.Client(protocol)
-  # Connect!
-  transport.open()
+    for port in port_list:
+      hash = hashlib.sha256("%s:%d" % (host, port)).hexdigest()
+      decremented_hash_str = hex(int(hash, 16) + 1)[2:]
+      assert client.findPred(decremented_hash_str) == port
 
-  res_1 = client.findPred("42E197B31EF421E4B7995324FD8FA7CE9F781E32002C65BA86DBABADE24AEC83")
-  res_2 = client.findPred("CE5B56C3815D692CA036D6A663DCB29683481756C201B6EF50A7E8F4D8532023")
-  res_3 = client.findPred("60DE97FE3C29E0EC465924E8CDE1189BF29F73D03495B1E1740A3D10A407FFDE")
-  res_4 = client.findPred("445BE48D4D32D4F22B278A424A430CD533BB5E8D80F5C0B85289D1DFE6A328EC")
+    print "findPred(%d) test passed" % query_port
+    transport.close()
 
-  assert res_1.port == 9000
-  assert res_2.port == 9001
-  assert res_3.port == 9002
-  assert res_4.port == 9003
-
-  print "findPred() test passed"
-
-  transport.close()
+  for port in port_list:
+    testPred(port)
 
 def testReadAfterWrite():
   # Make socket
@@ -297,16 +293,19 @@ def testOverwrite():
   transport.close()
 
 def main():
-  testPred("alpha.cs.binghamton.edu", 9000)
-  testPred("alpha.cs.binghamton.edu", 9001)
-  testPred("alpha.cs.binghamton.edu", 9002)
-  testPred("alpha.cs.binghamton.edu", 9003)
+  port_list = []
+  node_file_obj = open(NODE_INFO_FILE, 'r')
+  conn_tuple = node_file_obj.readline().strip()
+  host = conn_tuple.split(':')[0]
+  while conn_tuple:
+    peices = conn_tuple.split(':')
+    host = peices[0]
+    port = int(peices[1])
+    port_list.append(port)
+    conn_tuple = node_file_obj.readline().strip()
 
-  testSucc("alpha.cs.binghamton.edu", 9000)
-  testSucc("alpha.cs.binghamton.edu", 9001)
-  testSucc("alpha.cs.binghamton.edu", 9002)
-  testSucc("alpha.cs.binghamton.edu", 9003)
-
+  run_pred_tests(host, port_list)
+  run_succ_tests(host, port_list)
   testOverwrite()
   testReadAfterWrite()
   testReadAfterWriteError()
