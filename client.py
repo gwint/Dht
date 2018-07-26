@@ -31,6 +31,7 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
 import hashlib
+import random
 
 NODE_INFO_FILE = "nodes.txt"
 
@@ -83,9 +84,16 @@ def run_pred_tests(host, port_list):
   for port in port_list:
     testPred(port)
 
-def testReadAfterWrite():
+def testReadAfterWrite(host, port_list):
+  if len(port_list) < 2:
+    return
+
+  # Pick 2 ports at random
+  rand_idx = random.randint(0, len(port_list)-1)
+  port = port_list[rand_idx]
+
   # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  transport = TSocket.TSocket(host, port)
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -99,8 +107,9 @@ def testReadAfterWrite():
   meta_obj.filename = "book.txt"
   meta_obj.version = 0
   meta_obj.owner = "Brad"
-  meta_obj.contentHash = hashlib.sha256(meta_obj.filename +\
-                              ":" + meta_obj.owner).hexdigest()
+  meta_obj.contentHash = \
+    hashlib.sha256(("%s:%s" % (meta_obj.filename,\
+                               meta_obj.owner)).encode("utf-8")).hexdigest()
 
   content_str = "Knowledge Bitch!"
   file_obj = RFile()
@@ -112,7 +121,7 @@ def testReadAfterWrite():
   transport.close()
 
   # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  transport = TSocket.TSocket(host, port)
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -303,7 +312,7 @@ def main():
   run_pred_tests(host, port_list)
   run_succ_tests(host, port_list)
   #testOverwrite()
-  #testReadAfterWrite()
+  testReadAfterWrite(host, port_list)
   #testReadAfterWriteError()
   #incorrectOwnerTest()
 
