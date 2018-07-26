@@ -88,12 +88,11 @@ def testReadAfterWrite(host, port_list):
   if len(port_list) < 2:
     return
 
-  # Pick 2 ports at random
   rand_idx = random.randint(0, len(port_list)-1)
-  port = port_list[rand_idx]
+  rand_port = port_list[rand_idx]
 
   # Make socket
-  transport = TSocket.TSocket(host, port)
+  transport = TSocket.TSocket(host, rand_port)
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -116,12 +115,25 @@ def testReadAfterWrite(host, port_list):
   file_obj.meta = meta_obj
   file_obj.content = content_str
 
-  client.writeFile(file_obj)
+  succ = client.findSucc(file_obj.meta.contentHash)
 
   transport.close()
 
   # Make socket
-  transport = TSocket.TSocket(host, port)
+  transport = TSocket.TSocket(host, succ.port)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  client.writeFile(file_obj)
+
+  # Make socket
+  transport = TSocket.TSocket(host, succ.port)
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -137,9 +149,12 @@ def testReadAfterWrite(host, port_list):
 
   transport.close()
 
-def testReadAfterWriteError():
+def testReadAfterWriteError(host, port_list):
+  rand_idx = random.randint(0, len(port_list))
+  rand_port = port_list[rand_idx]
+
   # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  transport = TSocket.TSocket(host, rand_port)
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -153,20 +168,38 @@ def testReadAfterWriteError():
   meta_obj.filename = "book.txt"
   meta_obj.version = 0
   meta_obj.owner = "Brad"
-  meta_obj.contentHash = hashlib.sha256(meta_obj.filename +\
-                              ":" + meta_obj.owner).hexdigest()
+  meta_obj.contentHash = \
+    hashlib.sha256(("%s:%s" % (meta_obj.filename,\
+                               meta_obj.owner)).encode("utf-8")).hexdigest()
 
   content_str = "Knowledge Bitch!"
   file_obj = RFile()
   file_obj.meta = meta_obj
   file_obj.content = content_str
 
-  client.writeFile(file_obj)
+  succ = client.findSucc(file_obj.meta.contentHash)
 
   transport.close()
 
   # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9001)
+  transport = TSocket.TSocket(host, succ.port)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  client.writeFile(file_obj)
+
+  transport.close()
+
+  other_port = [port for port in port_list if port != succ.port][0]
+
+  # Make socket
+  transport = TSocket.TSocket(host, other_port)
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -185,9 +218,12 @@ def testReadAfterWriteError():
   transport.close()
 
 
-def incorrectOwnerTest():
+def incorrectOwnerTest(host, port_list):
+  if len(port_list) < 2:
+    return
+
   # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  transport = TSocket.TSocket(host, port_list[0])
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -201,8 +237,9 @@ def incorrectOwnerTest():
   meta_obj.filename = "book.txt"
   meta_obj.version = 0
   meta_obj.owner = "Brad"
-  meta_obj.contentHash = hashlib.sha256(meta_obj.filename +\
-                              ":" + meta_obj.owner).hexdigest()
+  meta_obj.contentHash = \
+    hashlib.sha256(("%s:%s" % (meta_obj.filename,\
+                               meta_obj.owner)).encode("utf-8")).hexdigest()
 
   content_str = "Test String"
   file_obj = RFile()
@@ -214,7 +251,7 @@ def incorrectOwnerTest():
   transport.close()
 
   # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  transport = TSocket.TSocket(host, port_list[1])
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -231,9 +268,12 @@ def incorrectOwnerTest():
 
   transport.close()
 
-def testOverwrite():
+def testOverwrite(host, port_list):
+  rand_idx = random.randint(0, len(port_list))
+  rand_port = port_list[rand_idx]
+
   # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  transport = TSocket.TSocket(host, rand_port)
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -247,20 +287,34 @@ def testOverwrite():
   meta_obj.filename = "book.txt"
   meta_obj.version = 0
   meta_obj.owner = "Brad"
-  meta_obj.contentHash = hashlib.sha256(meta_obj.filename +\
-                              ":" + meta_obj.owner).hexdigest()
+  meta_obj.contentHash = \
+    hashlib.sha256(("%s:%s" % (meta_obj.filename,\
+                               meta_obj.owner)).encode("utf-8")).hexdigest()
 
   content_str = "Test String"
   file_obj = RFile()
   file_obj.meta = meta_obj
   file_obj.content = content_str
 
-  client.writeFile(file_obj)
+  succ = client.findSucc(file_obj.meta.contentHash)
 
   transport.close()
 
   # Make socket
-  transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+  transport = TSocket.TSocket(host, succ.port)
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  client.writeFile(file_obj)
+
+  # Make socket
+  transport = TSocket.TSocket(host, succ.port)
   # Buffering is critical. Raw sockets are very slow
   transport = TTransport.TBufferedTransport(transport)
   # Wrap in a protocol
@@ -276,8 +330,11 @@ def testOverwrite():
   client.writeFile(file_obj)
 
   try:
+    rand_idx = random.randint(0, len(port_list))
+    rand_port = port_list[rand_idx]
+
     # Make socket
-    transport = TSocket.TSocket('alpha.cs.binghamton.edu', 9000)
+    transport = TSocket.TSocket(host, rand_port)
     # Buffering is critical. Raw sockets are very slow
     transport = TTransport.TBufferedTransport(transport)
     # Wrap in a protocol
@@ -311,10 +368,10 @@ def main():
 
   run_pred_tests(host, port_list)
   run_succ_tests(host, port_list)
-  #testOverwrite()
+  testOverwrite(host, port_list)
   testReadAfterWrite(host, port_list)
-  #testReadAfterWriteError()
-  #incorrectOwnerTest()
+  testReadAfterWriteError(host, port_list)
+  incorrectOwnerTest(host, port_list)
 
 if __name__ == '__main__':
     try:
