@@ -35,6 +35,21 @@ import random
 
 NODE_INFO_FILE = "nodes.txt"
 
+def test_node_addition(host, port_list, new_host, new_port):
+  # Make socket
+  transport = TSocket.TSocket(host, port_list[0])
+  # Buffering is critical. Raw sockets are very slow
+  transport = TTransport.TBufferedTransport(transport)
+  # Wrap in a protocol
+  protocol = TBinaryProtocol.TBinaryProtocol(transport)
+  # Create a client to use the protocol encoder
+  client = FileStore.Client(protocol)
+  # Connect!
+  transport.open()
+
+  client.addNode(host, new_port)
+
+
 def run_succ_tests(host, port_list):
   def testSucc(query_port):
     # Make socket
@@ -150,7 +165,7 @@ def testReadAfterWrite(host, port_list):
   transport.close()
 
 def testReadAfterWriteError(host, port_list):
-  rand_idx = random.randint(0, len(port_list))
+  rand_idx = random.randint(0, len(port_list)-1)
   rand_port = port_list[rand_idx]
 
   # Make socket
@@ -269,7 +284,7 @@ def incorrectOwnerTest(host, port_list):
   transport.close()
 
 def testOverwrite(host, port_list):
-  rand_idx = random.randint(0, len(port_list))
+  rand_idx = random.randint(0, len(port_list)-1)
   rand_port = port_list[rand_idx]
 
   # Make socket
@@ -330,7 +345,7 @@ def testOverwrite(host, port_list):
   client.writeFile(file_obj)
 
   try:
-    rand_idx = random.randint(0, len(port_list))
+    rand_idx = random.randint(0, len(port_list)-1)
     rand_port = port_list[rand_idx]
 
     # Make socket
@@ -372,6 +387,7 @@ def main():
   testReadAfterWrite(host, port_list)
   testReadAfterWriteError(host, port_list)
   incorrectOwnerTest(host, port_list)
+  test_node_addition(host, port_list, host, 9002)
 
 if __name__ == '__main__':
     try:

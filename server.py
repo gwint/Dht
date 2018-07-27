@@ -33,6 +33,8 @@ from socket import gethostbyname, gethostname
 import init
 import hashlib
 import socket
+from subprocess import Popen
+from time import sleep
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -58,14 +60,27 @@ class ChordHandler:
 
     def addNode(self, host, port):
       new_node_key = hashlib.sha256(host + ":" + str(port)).hexdigest()
+      new_node = NodeID()
+      new_node.ip = host
+      new_node.port = port
+      new_node.id = new_node_key
       ## Need to startup up server.py w/ host and port info
       ## Make its fingertable (current node to find all answers)
       new_fingertable = []
 
       for i in range(256):
-        finger_key = (int(new_node_key, 16) + (2^i)) % (2^256)
-        succ = findSucc(finger_key)
-        new_fingertable.append(findSucc(finger_key))
+        finger_key = \
+         hex((int(new_node_key, 16) + (2**i)) % (2**256)).strip("0x").strip('L')
+        succ = self.findSucc(finger_key)
+
+        if(self.contains(new_node_key, finger_key, succ.id)):
+          new_fingertable.append(new_node)
+        else:
+          new_fingertable.append(self.findSucc(finger_key))
+
+      ## Launch new server
+      Popen(["python2", "server.py"] + [str(port)])
+      sleep(3)
 
       ## Update other nodes fingertables
       transport = TSocket.TSocket(host, port)
@@ -78,6 +93,8 @@ class ChordHandler:
       transport.open()
 
       client.setFingertable(new_fingertable)
+
+      ## Fingertables of other nodes need to be updated
 
 
     def writeFile(self, file_obj):
