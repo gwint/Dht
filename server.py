@@ -63,7 +63,9 @@ class ChordHandler:
       self.fileData.append(file_obj)
 
     def removeFile(self, content_hash):
-      pass
+      for i in range(len(self.fileData)):
+        if(file_obj.meta.contentHash == content_hash):
+          self.fileData.pop(i)
 
     def getFiles(self):
       return self.fileData
@@ -74,7 +76,6 @@ class ChordHandler:
       new_node.ip = host
       new_node.port = port
       new_node.id = new_node_key
-      ## Need to startup up server.py w/ host and port info
       ## Make its fingertable (current node to find all answers)
       new_fingertable = []
 
@@ -103,10 +104,65 @@ class ChordHandler:
       transport.open()
 
       client.setFingertable(new_fingertable)
+      transport.close()
 
-      ## New node needs to take ownership of its files from its successor
+      new_node_succ = self.findSucc(new_node_key)
+      new_node_pred = self.findPred(new_node_key)
+
+      succ_files = []
+
+      if(new_node_succ.id == new_node_key):
+        succ_files = self.getFiles()
+      else:
+        ## Update other nodes fingertables
+        transport = TSocket.TSocket(new_node_succ.ip, new_node_succ.port)
+        # Buffering is critical. Raw sockets are very slow
+        transport = TTransport.TBufferedTransport(transport)
+        # Wrap in a protocol
+        protocol = TBinaryProtocol.TBinaryProtocol(transport)
+        # Create a client to use the protocol encoder
+        client = FileStore.Client(protocol)
+        transport.open()
+
+        succ_files = client.getFiles()
+        transport.close()
+
+      ## New node must take ownership of some files from successor,
+      ## while successor must relinquish ownership of some
+      for file_obj in succ_files:
+        if(self.contains(file_obj.meta.contentHash,\
+                         new_node_pred.id,\
+                         new_node_key)):
+          ## File belongs to new node
+          if(new_node_succ.id == self.myNode.id):
+            self.removeFile(file_obj.meta.contentHash)
+          else:
+            ## Update other nodes fingertables
+            transport = TSocket.TSocket(new_node_succ.ip, new_node_succ.port)
+            # Buffering is critical. Raw sockets are very slow
+            transport = TTransport.TBufferedTransport(transport)
+            # Wrap in a protocol
+            protocol = TBinaryProtocol.TBinaryProtocol(transport)
+            # Create a client to use the protocol encoder
+            client = FileStore.Client(protocol)
+            transport.open()
+
+            client.removeFile(file_obj.meta.contentHash)
+
+          ## Update other nodes fingertables
+          transport = TSocket.TSocket(host, port)
+          # Buffering is critical. Raw sockets are very slow
+          transport = TTransport.TBufferedTransport(transport)
+          # Wrap in a protocol
+          protocol = TBinaryProtocol.TBinaryProtocol(transport)
+          # Create a client to use the protocol encoder
+          client = FileStore.Client(protocol)
+          transport.open()
+
+          client.addFile(file_obj)
 
       ## Fingertables of other nodes need to be updated
+
 
 
     def writeFile(self, file_obj):
