@@ -58,6 +58,16 @@ class ChordHandler:
         self.myNode.id = key
         self.fileData = []
 
+    def addFile(self, file_obj):
+      ## check to see if node owns file, if not throw error
+      self.fileData.append(file_obj)
+
+    def removeFile(self, content_hash):
+      pass
+
+    def getFiles(self):
+      return self.fileData
+
     def addNode(self, host, port):
       new_node_key = hashlib.sha256(host + ":" + str(port)).hexdigest()
       new_node = NodeID()
@@ -93,6 +103,8 @@ class ChordHandler:
       transport.open()
 
       client.setFingertable(new_fingertable)
+
+      ## New node needs to take ownership of its files from its successor
 
       ## Fingertables of other nodes need to be updated
 

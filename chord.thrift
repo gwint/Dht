@@ -5,6 +5,10 @@ exception SystemException {
   1: optional string message
 }
 
+struct NodeData {
+  1: list<RFile> data;
+}
+
 struct RFileMetadata {
   1: optional string filename;
   2: optional i32 version;
@@ -24,8 +28,6 @@ struct NodeID {
 }
 
 service FileStore extends shared.SharedService {
-  void ping(),
-
   void addNode(1: string host, 2: i32 port)
     throws (1: SystemException systemException),
 
@@ -45,5 +47,14 @@ service FileStore extends shared.SharedService {
 
   NodeID getNodeSucc() 
     throws (1: SystemException systemException),
+
+  NodeData getFiles()
+    throws (1: SystemException systemException),
+
+  void addFile(1: RFile file)
+    throws (1: SystemException systemException),
+
+  void removeFile(1: string hash)
+    throws (1: SystemException systemException)
 
 }
