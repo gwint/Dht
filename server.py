@@ -64,7 +64,7 @@ class ChordHandler:
 
     def removeFile(self, content_hash):
       for i in range(len(self.fileData)):
-        if(file_obj.meta.contentHash == content_hash):
+        if(self.fileData[i].meta.contentHash == content_hash):
           self.fileData.pop(i)
 
     def getFiles(self):
@@ -111,7 +111,7 @@ class ChordHandler:
 
       succ_files = []
 
-      if(new_node_succ.id == new_node_key):
+      if(new_node_succ.id == self.myNode.id):
         succ_files = self.getFiles()
       else:
         ## Update other nodes fingertables
@@ -127,8 +127,8 @@ class ChordHandler:
         succ_files = client.getFiles()
         transport.close()
 
-      ## New node must take ownership of some files from successor,
-      ## while successor must relinquish ownership of some
+      # New node must take ownership of some files from successor,
+      # while successor must relinquish ownership of some
       for file_obj in succ_files:
         if(self.contains(file_obj.meta.contentHash,\
                          new_node_pred.id,\
