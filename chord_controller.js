@@ -41,4 +41,9 @@ jQuery(document).ready(function() {
     jQuery("#added_ports").html(jQuery.trim(new_contents));
     jQuery("#port_entry_box").val("");
   });
+
+  jQuery(".command_bar").click(function() {
+    jQuery(".command_bar").css("background-color", "white");
+    jQuery(this).css("background-color", "grey");
+  });
 });

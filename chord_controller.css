@@ -69,3 +69,22 @@
   float: right;
   border-bottom-right-radius: 10px;
 }
+
+.command_bar {
+  vertical-align: center;
+  border-left-style:solid;
+  border-bottom-style:solid;
+  display: inline-block;
+  margin-left: -6px; 
+  width: 25%;
+  height: 10%;
+}
+
+#add_btn {
+  border-left-style:none;
+  margin-left: -9px;
+}
+
+#write_btn {
+  margin-right: -4px;
+}
