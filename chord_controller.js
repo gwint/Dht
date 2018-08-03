@@ -27,6 +27,17 @@ function create_dht() {
   }
 }
 
+function add_host_port_tuple() {
+  let host_label = '<label for="host">IP:</label>';
+  let host_entry = '<input id="host" type="text"/>';
+  let port_label = '<label for="port">Port:</label>';
+  let port_entry = '<input type="text"/>';
+
+  html_str = host_label + host_entry + port_label + port_entry + "<br>";
+
+  jQuery("#host_ip_tuple_panel").append(html_str);
+}
+
 jQuery(document).ready(function() {
   jQuery("#create_dht_btn").click(function() {
     jQuery("#btn_response_area").text("DHT CREATED");
@@ -46,4 +57,6 @@ jQuery(document).ready(function() {
     jQuery(".command_bar").css("background-color", "white");
     jQuery(this).css("background-color", "grey");
   });
+
+  jQuery("#add_host_ip_tuple_btn").click(add_host_port_tuple);
 });
