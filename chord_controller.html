@@ -1,6 +1,8 @@
 <html>
 <head>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="host_ip_tuple_collection.js"></script>
+  <script src="dht_creator.js"></script>
   <script src="chord_controller.js"></script>
   <link rel="stylesheet" href="chord_controller.css">
 </head>
@@ -11,13 +13,13 @@
     </div>
     <div id="host_ip_tuple_panel">
       <button id="add_host_ip_tuple_btn">Add Connection</button>
-      <button id="create_dht_btn" type="button">Create DHT</button>
+      <button id="create_dht_btn" type="button" disabled>Create DHT</button>
       <div id="btn_response_area">
         NO DHT YET
       </div>
       <div id="host_ip_tuple_entry_area">
       </div>
-      <button id="commit_host_port_tuples_btn">Add Host & Port Pairs</button>
+      <button id="commit_host_port_tuples_btn" disabled>Add Host & Port Pairs</button>
     </div>
     <div id="command_panel">
       <div class="command_bar" id="add_btn">
