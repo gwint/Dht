@@ -4,6 +4,10 @@ class Dht_Creator {
     this.host_ip_tuples = host_ip_tuple_collection;
   }
 
+  is_dht_created() {
+    return this.created;
+  }
+
   create_dht() {
     if(!this.created) {
       // Create WebSocket connection.

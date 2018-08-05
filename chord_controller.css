@@ -1,33 +1,8 @@
-#port_entry_area {
-  margin-top: 40px;
-  width: 59%;
-  height: 10%;
+button {
+  width: 100%;
 }
 
-#port_entry_box {
-  height: 100%;
-  width: 30%;
-  float: left;
-}
-
-#add_port_btn {
-  height: 50%;
-  width: 20%;
-  padding-left: 10px;
-  padding-right: 10px;
-  float: left;
-  margin-left: 50px;
-  margin-top: 16px;
-}
-
-#added_ports {
-  rows: "5";
-  columns: "5";
-  overflow-y: scroll;
-  border-style: solid;
-  width: 25%;
-  height: 100%;
-  float: right;
+h1 {
 }
 
 #main_panel {
@@ -37,6 +12,7 @@
 }
 
 #title_panel {
+  margin-top: -22px;
   width: 100%;
   height: 10%;
   background-color: green;
@@ -46,7 +22,7 @@
 }
 
 #host_ip_tuple_panel {
-  width: 30%;
+  width: 29%;
   height: 89%;
   background-color: white;
   border-style: solid;
@@ -58,7 +34,7 @@
 }
 
 #command_panel {
-  width: 69%;
+  width: 70%;
   height: 89%;
   background-color: white;
   border-style: solid;
@@ -70,23 +46,22 @@
   border-bottom-right-radius: 10px;
 }
 
-.command_bar {
-  vertical-align: center;
-  border-left-style:solid;
-  border-bottom-style:solid;
-  display: inline-block;
-  margin-left: -6px; 
+.command_bar button{
+  display: inline;
   width: 25%;
-  height: 10%;
+  float: left;
+}
+
+#options {
+  margin-left: -1%;
+  width: 101%;
 }
 
 #add_btn {
-  border-left-style:none;
-  margin-left: -9px;
 }
 
 #write_btn {
-  margin-right: -4px;
+  /*margin-right: -4%;*/
 }
 
 input {

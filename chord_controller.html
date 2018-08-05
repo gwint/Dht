@@ -9,37 +9,34 @@
 <body>
   <center id="main_panel">
     <div id="title_panel">
-      My Dht Web Client
+      <h1>My Dht Web Client</h1>
     </div>
     <div id="host_ip_tuple_panel">
       <button id="add_host_ip_tuple_btn">Add Connection</button>
+      <div id="host_ip_tuple_entry_area">
+      </div>
+      <button id="commit_host_port_tuples_btn" disabled>Add Host & Port Pairs</button>
       <button id="create_dht_btn" type="button" disabled>Create DHT</button>
       <div id="btn_response_area">
         NO DHT YET
       </div>
-      <div id="host_ip_tuple_entry_area">
-      </div>
-      <button id="commit_host_port_tuples_btn" disabled>Add Host & Port Pairs</button>
     </div>
     <div id="command_panel">
-      <div class="command_bar" id="add_btn">
-        <p>Add Node</p>
-      </div>
-      <div class="command_bar" id="del_btn">
-        <p>Remove Node</p>
-      </div>
-      <div class="command_bar" id="read_btn">
-        <p>Read Data</p>
-      </div>
-      <div class="command_bar" id="write_btn">
-        <p>Write Data</p>
+      <div id="options">
+        <div class="command_bar" id="add_btn">
+          <button>Add Node</button>
+        </div>
+        <div class="command_bar" id="del_btn">
+          <button disabled>Remove Node</button>
+        </div>
+        <div class="command_bar" id="read_btn">
+          <button>Read Data</button>
+        </div>
+        <div class="command_bar" id="write_btn">
+          <button>Write Data</button>
+        </div>
       </div>
     </div>
-    <center id="port_entry_area">
-      <input type="text" id="port_entry_box" placeholder="Enter Port Number">
-      <input type="image" id="add_port_btn" src="https://png.icons8.com/windows/1600/long-arrow-right.png"></button>
-      <textarea id="added_ports"></textarea>
-    </center>
   </center>
 </body>
 </html>

@@ -5,6 +5,7 @@ jQuery(document).ready(function() {
   jQuery("#create_dht_btn").click(function() {
     jQuery("#btn_response_area").text("DHT CREATED");
     dht_creator.create_dht();
+    jQuery("#create_dht_btn").attr("disabled", true);
   });
 
   jQuery("#add_port_btn").click(function() {
@@ -17,8 +18,10 @@ jQuery(document).ready(function() {
   });
 
   jQuery(".command_bar").click(function() {
-    jQuery(".command_bar").css("background-color", "white");
-    jQuery(this).css("background-color", "grey");
+    if(dht_creator != null && dht_creator.is_dht_created()) {
+      jQuery(".command_bar").css("background-color", "white");
+      jQuery(this).css("background-color", "grey");
+    }
   });
 
   jQuery("#add_host_ip_tuple_btn").click(function() {
