@@ -1,39 +1,10 @@
-var DHT_CREATED = false;
-
-function create_dht() {
-  if(!DHT_CREATED) {
-    // Create WebSocket connection.
-    const socket = new WebSocket('ws://localhost:9999');
-
-    // Listen for messages
-    socket.addEventListener('message', function (event) {
-    });
-
-    // Connection opened
-    socket.addEventListener('open', function (event) {
-      console.log("open method called");
-      // Send Json object containing port numbers
-      port_list_contents = (jQuery("#added_ports").val()).split("\n").map(
-                               function(port_str) {
-                                 return parseInt(port_str);
-                               });
-      alert(port_list_contents);
-      let ports = port_list_contents;
-      alert(JSON.stringify(ports));
-      socket.send(JSON.stringify(ports));
-    });
-
-    DHT_CREATED = true;
-  }
-}
-
 jQuery(document).ready(function() {
   let host_ip_tuples = new Host_IP_Tuple_Collection();
   let dht_creator = null;
 
   jQuery("#create_dht_btn").click(function() {
     jQuery("#btn_response_area").text("DHT CREATED");
-    create_dht();
+    dht_creator.create_dht();
   });
 
   jQuery("#add_port_btn").click(function() {
@@ -96,5 +67,8 @@ jQuery(document).ready(function() {
     for(let i = 0; i < hosts.length; i++) {
       host_ip_tuples.add_tuple(hosts[i], ports[i]);
     }
+    alert(host_ip_tuples);
+    dht_creator = new Dht_Creator(host_ip_tuples);
+    alert(dht_creator);
   });
 });

@@ -14,15 +14,16 @@ class Dht_Creator {
       });
 
       // Connection opened
+      let self = this;
       socket.addEventListener('open', function(event) {
+        alert(self.host_ip_tuples.get_ports());
         // Send Json object containing port numbers
-
-        port_list_contents = (jQuery("#added_ports").val()).split("\n").map(
-                               function(port_str) {
-                                 return parseInt(port_str);
-                               });
-        let ports = port_list_contents;
-        socket.send(JSON.stringify(ports));
+        //let port_list_contents = (jQuery("#added_ports").val()).split("\n").map(
+        //                       function(port_str) {
+        //                         return parseInt(port_str);
+        //                       });
+        //let ports = port_list_contents;
+        //socket.send(JSON.stringify(ports));
       });
 
     this.created = true;

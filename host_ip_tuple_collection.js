@@ -1,16 +1,21 @@
 class Host_IP_Tuple_Collection {
-  constructor(host, port) {
-    this.host = host;
-    this.port = port;
+  constructor() {
     this.host_port_tuples = [];
   }
 
-  get_host() {
-    return this.host;
+  get_ports() {
+    let ports = [];
+    this.host_port_tuples.forEach(function(tuple) {
+      ports.push(tuple[1]);
+    });
+    alert("ports:" + ports);
+    return ports;
   }
 
-  get_port() {
-    return this.port;
+  get_hosts() {
+  }
+
+  get_host_port_tuples() {
   }
 
   add_tuple(host, port) {
