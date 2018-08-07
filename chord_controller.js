@@ -1,4 +1,11 @@
 jQuery(document).ready(function() {
+  let id_to_html_str_mappings = {};
+  id_to_html_str_mappings["add_btn"] =
+                 '<label for="host">IP:</label>' +
+                 '<input class="host_entry entry" id="host" type="text"/>' +
+                 '<label for="port">Port:</label>' +
+                 '<input class="port_entry entry" type="text"/>' +
+                 '<button id="add_new_node_btn">Add Node</button>';
   let host_ip_tuples = new Host_IP_Tuple_Collection();
   let dht_creator = null;
 
@@ -15,13 +22,6 @@ jQuery(document).ready(function() {
     alert(new_contents);
     jQuery("#added_ports").html(jQuery.trim(new_contents));
     jQuery("#port_entry_box").val("");
-  });
-
-  jQuery(".command_bar").click(function() {
-    if(dht_creator != null && dht_creator.is_dht_created()) {
-      jQuery(".command_bar").css("background-color", "white");
-      jQuery(this).css("background-color", "grey");
-    }
   });
 
   jQuery("#add_host_ip_tuple_btn").click(function() {
@@ -73,5 +73,15 @@ jQuery(document).ready(function() {
     alert(host_ip_tuples);
     dht_creator = new Dht_Creator(host_ip_tuples);
     alert(dht_creator);
+  });
+
+  jQuery(".command_btn").click(function() {
+    if(dht_creator != null && dht_creator.is_dht_created()) {
+      jQuery(".command_btn").css("border-style", "outset");
+      jQuery(this).css("border-style", "inset");
+
+      let id = jQuery(this).attr("id");
+      jQuery("#options").append(id_to_html_str_mappings[id]);
+    }
   });
 });
