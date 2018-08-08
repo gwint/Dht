@@ -1,6 +1,8 @@
 <html>
 <head>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+  <script src="command_manager.js"></script>
   <script src="host_ip_tuple_collection.js"></script>
   <script src="dht_creator.js"></script>
   <script src="chord_controller.js"></script>
@@ -23,18 +25,20 @@
     </div>
     <div id="command_panel">
       <div id="options">
-        <div class="command_bar" id="add_btn">
+        <div class="command_bar" id="add_btn_area">
           <button id="add_btn" class="command_btn">Add Node</button>
         </div>
         <div class="command_bar" id="del_btn">
           <button id="delete_btn" "class="command_btn" disabled>Remove Node</button>
         </div>
-        <div class="command_bar" id="read_btn">
+        <div class="command_bar" id="read_btn_area">
           <button id="read_btn" class="command_btn">Read Data</button>
         </div>
         <div class="command_bar" id="write_btn">
           <button id="write_btn" class="command_btn">Write Data</button>
         </div>
+      </div>
+      <div id="command_prompt_area">
       </div>
     </div>
   </center>

@@ -1,13 +1,9 @@
 jQuery(document).ready(function() {
+
   let id_to_html_str_mappings = {};
-  id_to_html_str_mappings["add_btn"] =
-                 '<label for="host">IP:</label>' +
-                 '<input class="host_entry entry" id="host" type="text"/>' +
-                 '<label for="port">Port:</label>' +
-                 '<input class="port_entry entry" type="text"/>' +
-                 '<button id="add_new_node_btn">Add Node</button>';
   let host_ip_tuples = new Host_IP_Tuple_Collection();
   let dht_creator = null;
+  let command_manager = null;
 
   jQuery("#create_dht_btn").click(function() {
     jQuery("#btn_response_area").text("DHT CREATED");
@@ -75,13 +71,50 @@ jQuery(document).ready(function() {
     alert(dht_creator);
   });
 
+
   jQuery(".command_btn").click(function() {
     if(dht_creator != null && dht_creator.is_dht_created()) {
       jQuery(".command_btn").css("border-style", "outset");
       jQuery(this).css("border-style", "inset");
 
       let id = jQuery(this).attr("id");
-      jQuery("#options").append(id_to_html_str_mappings[id]);
+      if(command_manager != null &&
+         !command_manager.has_command_executed()) {
+        command_manager.change_command(id);
+        command_manager.execute_command();
+      }
     }
   });
+
+
+  jQuery.get("command_prompt_template.html #command_prompt_template", function(data) {
+    jQuery("head").append(data);
+    let replace_command_prompt = function(parent, html_str) {
+      jQuery(parent).append(html_str);
+    };
+
+    let template = jQuery("#command_prompt_template").html();
+    let template_script = Handlebars.compile(template);
+
+    let add_btn_context = [{"label":"Host"},
+                           {"label":"Port"}];
+    let read_data_context = [{"label":"File Name"},
+                             {"label":"Owner"}];
+
+    id_to_html_str_mappings["add_btn"] = function() {
+      let html_str = template_script(add_btn_context[0]) +
+                     template_script(add_btn_context[1]);
+      replace_command_prompt("#command_prompt_area", html_str);
+    };
+    id_to_html_str_mappings["read_btn"] = function() {
+      let html_str = template_script(read_data_context[0]) +
+                     template_script(read_data_context[1]);
+      replace_command_prompt("#command_prompt_area", html_str);
+    };
+
+    command_manager = new Command_Manager(id_to_html_str_mappings);
+  });
+
+
+
 });
