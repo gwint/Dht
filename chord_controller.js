@@ -103,17 +103,28 @@ jQuery(document).ready(function() {
     let read_data_context = [{"label":"File Name:"},
                              {"label":"Owner:"},
                              {"btn_text":"Read Data"}];
+    let write_data_context = [{"label":"File:"},
+                              {"label":"Owner:"},
+                              {"label":"Contents:"},
+                              {"btn_text":"Write Data"}];
 
     id_to_html_str_mappings["add_btn"] = function() {
-      let html_str = template_script(add_btn_context[0]) +
-                     template_script(add_btn_context[1]) +
+      let html_str = template_script(add_btn_context[0]) + "<br>" +
+                     template_script(add_btn_context[1]) + "<br>" +
                      btn_script(add_btn_context[2]);
       replace_command_prompt("#command_prompt_area", html_str);
     };
     id_to_html_str_mappings["read_btn"] = function() {
-      let html_str = template_script(read_data_context[0]) +
-                     template_script(read_data_context[1]) +
+      let html_str = template_script(read_data_context[0]) + "<br>" +
+                     template_script(read_data_context[1]) + "<br>" +
                      btn_script(read_data_context[2]);
+      replace_command_prompt("#command_prompt_area", html_str);
+    };
+    id_to_html_str_mappings["write_btn"] = function() {
+      let html_str = template_script(write_data_context[0]) + "<br>" +
+                     template_script(write_data_context[1]) + "<br>" +
+                     template_script(write_data_context[2]) + "<br>" +
+                     btn_script(write_data_context[3]);
       replace_command_prompt("#command_prompt_area", html_str);
     };
 
