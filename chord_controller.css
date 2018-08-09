@@ -2,12 +2,12 @@ button {
   width: 100%;
 }
 
-#add_new_node_btn {
+#exec_command_btn {
   width: 20%;
-  margin-left: 5%;
 }
 
-h1 {
+#add_new_node_btn {
+  width: 20%;
 }
 
 #main_panel {
@@ -60,13 +60,6 @@ h1 {
 #options {
   margin-left: -1%;
   width: 101%;
-}
-
-#add_btn {
-}
-
-#write_btn {
-  /*margin-right: -4%;*/
 }
 
 input {

@@ -15,7 +15,6 @@ jQuery(document).ready(function() {
     let curr_contents = jQuery("#added_ports").text();
     let new_port = jQuery("#port_entry_box").val();
     let new_contents = curr_contents + "\n" + new_port;
-    alert(new_contents);
     jQuery("#added_ports").html(jQuery.trim(new_contents));
     jQuery("#port_entry_box").val("");
   });
@@ -60,26 +59,24 @@ jQuery(document).ready(function() {
     jQuery("#commit_host_port_tuples_btn").attr("disabled", true);
     jQuery("#add_host_ip_tuple_btn").attr("disabled", true);
     jQuery("#create_dht_btn").attr("disabled", false);
-    alert(hosts);
-    alert(ports);
     // place into collection object
     for(let i = 0; i < hosts.length; i++) {
       host_ip_tuples.add_tuple(hosts[i], ports[i]);
     }
-    alert(host_ip_tuples);
     dht_creator = new Dht_Creator(host_ip_tuples);
-    alert(dht_creator);
   });
 
 
   jQuery(".command_btn").click(function() {
+    alert("command button pressed");
     if(dht_creator != null && dht_creator.is_dht_created()) {
       jQuery(".command_btn").css("border-style", "outset");
       jQuery(this).css("border-style", "inset");
 
       let id = jQuery(this).attr("id");
       if(command_manager != null &&
-         !command_manager.has_command_executed()) {
+         (!command_manager.has_command_executed() ||
+         (command_manager.get_curr_id() != id))) {
         command_manager.change_command(id);
         command_manager.execute_command();
       }
@@ -90,25 +87,33 @@ jQuery(document).ready(function() {
   jQuery.get("command_prompt_template.html #command_prompt_template", function(data) {
     jQuery("head").append(data);
     let replace_command_prompt = function(parent, html_str) {
-      jQuery(parent).append(html_str);
+      jQuery(parent).html(html_str);
     };
 
     let template = jQuery("#command_prompt_template").html();
-    let template_script = Handlebars.compile(template);
+    let btn_template = jQuery("#exec_command_btn_template").html();
+    alert(btn_template);
 
-    let add_btn_context = [{"label":"Host"},
-                           {"label":"Port"}];
-    let read_data_context = [{"label":"File Name"},
-                             {"label":"Owner"}];
+    let template_script = Handlebars.compile(template);
+    let btn_script = Handlebars.compile(btn_template);
+
+    let add_btn_context = [{"label":"Host:"},
+                           {"label":"Port:"},
+                           {"btn_text":"Add Node"}];
+    let read_data_context = [{"label":"File Name:"},
+                             {"label":"Owner:"},
+                             {"btn_text":"Read Data"}];
 
     id_to_html_str_mappings["add_btn"] = function() {
       let html_str = template_script(add_btn_context[0]) +
-                     template_script(add_btn_context[1]);
+                     template_script(add_btn_context[1]) +
+                     btn_script(add_btn_context[2]);
       replace_command_prompt("#command_prompt_area", html_str);
     };
     id_to_html_str_mappings["read_btn"] = function() {
       let html_str = template_script(read_data_context[0]) +
-                     template_script(read_data_context[1]);
+                     template_script(read_data_context[1]) +
+                     btn_script(read_data_context[2]);
       replace_command_prompt("#command_prompt_area", html_str);
     };
 

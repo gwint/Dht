@@ -16,6 +16,10 @@ class Command_Manager {
     return this.command_executed;
   }
 
+  get_curr_id() {
+    return this.current_id;
+  }
+
   execute_command() {
     alert("this.current_id:" + this.current_id);
     alert(this.id_action_mappings[this.current_id]);
