@@ -8,7 +8,6 @@ class Host_IP_Tuple_Collection {
     this.host_port_tuples.forEach(function(tuple) {
       ports.push(tuple[1]);
     });
-    alert("ports:" + ports);
     return ports;
   }
 

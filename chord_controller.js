@@ -9,6 +9,12 @@ jQuery(document).ready(function() {
     jQuery("#btn_response_area").text("DHT CREATED");
     dht_creator.create_dht();
     jQuery("#create_dht_btn").attr("disabled", true);
+    let dht_creation_signal_color = "red";
+    if(dht_creator.is_dht_created()) {
+      dht_creation_signal_color = "green";
+    }
+    jQuery("#host_ip_tuple_panel").css("background-color",
+                                       dht_creation_signal_color);
   });
 
   jQuery("#add_port_btn").click(function() {
@@ -61,7 +67,7 @@ jQuery(document).ready(function() {
     jQuery("#create_dht_btn").attr("disabled", false);
     // place into collection object
     for(let i = 0; i < hosts.length; i++) {
-      host_ip_tuples.add_tuple(hosts[i], ports[i]);
+      host_ip_tuples.add_tuple(hosts[i], parseInt(ports[i], 10));
     }
     dht_creator = new Dht_Creator(host_ip_tuples);
   });

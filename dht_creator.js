@@ -20,17 +20,13 @@ class Dht_Creator {
       // Connection opened
       let self = this;
       socket.addEventListener('open', function(event) {
-        alert(self.host_ip_tuples.get_ports());
+        let ports = self.host_ip_tuples.get_ports();
+        alert(ports);
+        this.created = true;
         // Send Json object containing port numbers
-        //let port_list_contents = (jQuery("#added_ports").val()).split("\n").map(
-        //                       function(port_str) {
-        //                         return parseInt(port_str);
-        //                       });
-        //let ports = port_list_contents;
-        //socket.send(JSON.stringify(ports));
+        socket.send(JSON.stringify(ports));
       });
-
-    this.created = true;
     }
+    this.created = true;
   }
 }

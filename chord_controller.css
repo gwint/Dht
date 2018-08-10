@@ -6,6 +6,16 @@ button {
   width: 20%;
 }
 
+#command_prompt_area {
+  width: 30%;
+  clear: both;
+}
+
+#command_prompt_area>input {
+  width: 100%;
+  clear: both;
+}
+
 #add_new_node_btn {
   width: 20%;
 }
