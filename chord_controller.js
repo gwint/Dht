@@ -7,11 +7,18 @@ jQuery(document).ready(function() {
 
   jQuery("#create_dht_btn").click(function() {
     jQuery("#btn_response_area").text("DHT CREATED");
-    dht_creator.create_dht();
-    jQuery("#create_dht_btn").attr("disabled", true);
     let dht_creation_signal_color = "red";
-    if(dht_creator.is_dht_created()) {
+    dht_creator.create_dht();
+    if(dht_creator.get_state() == 1) {
+      jQuery("#create_dht_btn").attr("disabled", true);
       dht_creation_signal_color = "green";
+    }
+    else {
+      alert("Error: Could not connect to server!");
+      jQuery("#commit_host_port_tuples_btn").attr("disabled", false);
+      jQuery("#add_host_ip_tuple_btn").attr("disabled", false);
+      jQuery(".entry").attr("readonly", false);
+      jQuery(".entry").css("background-color", "white");
     }
     jQuery("#host_ip_tuple_panel").css("background-color",
                                        dht_creation_signal_color);
@@ -39,6 +46,7 @@ jQuery(document).ready(function() {
   });
 
   jQuery("#commit_host_port_tuples_btn").click(function() {
+    //let host_ip_tuples = new Host_IP_Tuple_Collection();
     let hosts = [];
     let ports = [];
     //loop through all hosts and ports
@@ -72,7 +80,6 @@ jQuery(document).ready(function() {
     dht_creator = new Dht_Creator(host_ip_tuples);
   });
 
-
   jQuery(".command_btn").click(function() {
     alert("command button pressed");
     if(dht_creator != null && dht_creator.is_dht_created()) {
@@ -88,7 +95,6 @@ jQuery(document).ready(function() {
       }
     }
   });
-
 
   jQuery.get("command_prompt_template.html #command_prompt_template", function(data) {
     jQuery("head").append(data);
@@ -133,10 +139,6 @@ jQuery(document).ready(function() {
                      btn_script(write_data_context[3]);
       replace_command_prompt("#command_prompt_area", html_str);
     };
-
     command_manager = new Command_Manager(id_to_html_str_mappings);
   });
-
-
-
 });
