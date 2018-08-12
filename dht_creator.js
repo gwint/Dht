@@ -3,10 +3,15 @@ class Dht_Creator {
     this.created = false;
     this.host_ip_tuples = host_ip_tuple_collection;
     this.socket = null;
+    this.target_id = -1;
   }
 
   is_dht_created() {
     return this.created;
+  }
+
+  get_current_target_id() {
+    return this.target_id;
   }
 
   get_state() {
@@ -21,11 +26,7 @@ class Dht_Creator {
     this.host_ip_tuples = null;
   }
 
-  connect() {
-    //this.socket = new WebSocket("ws://localhost:9999");
-  }
-
-  create_dht() {
+  create_dht(manager_arr) {
     if(!this.created) {
       // Create WebSocket connection.
       this.socket = new WebSocket("ws://localhost:9999");
@@ -33,8 +34,6 @@ class Dht_Creator {
       // Listen for messages
       this.socket.addEventListener('message', function(event) {
         //will listen for responses when commands sent to server
-        var a = 10;
-        return false;
       });
 
       this.socket.addEventListener('error', function(event) {
@@ -59,6 +58,14 @@ class Dht_Creator {
         // Show what success looks like
         jQuery("#create_dht_btn").attr("disabled", true);
         jQuery("#host_ip_tuple_panel").css("background-color", "green");
+        jQuery("#btn_response_area").text("DHT CREATED");
+        jQuery(".tuple_container").click(function(event) {
+          jQuery(".tuple_container").css("background-color", "grey");
+          jQuery(event.currentTarget).css("background-color", "white");
+          self.target_id = parseInt(jQuery(event.currentTarget).attr("id"));
+          alert(self.get_current_target_id());
+        });
+        manager_arr[0].register_targets("host_ip_tuple_entry_area");
       });
     }
   }

@@ -9,7 +9,28 @@ class Command_Manager {
       }
       return first_id;
     }(id_action_mappings);
-    alert("In constructor: " + this.current_id);
+    this.curr_ip_host_tuple_idx = -1;
+    this.targets_registered = false;
+  }
+
+  register_targets(parent_element_id) {
+    let self = this;
+    let curr_idx = 0;
+    let id = "#" + parent_element_id;
+    jQuery(id).children().each(function() {
+      jQuery(this).attr("id", curr_idx.toString());
+      curr_idx++
+    });
+    this.targets_registered = true;
+  }
+
+  unregister_targets(parent_element_id) {
+    let self = this;
+    let id = "#" + parent_element_id;
+    jQuery(id).children().each(function() {
+      jQuery(this).removeAttr("id");
+    });
+    this.targets_registered = false;
   }
 
   has_command_executed() {
@@ -20,21 +41,33 @@ class Command_Manager {
     return this.current_id;
   }
 
-  execute_command() {
-    alert("this.current_id:" + this.current_id);
-    alert(this.id_action_mappings[this.current_id]);
-    (this.id_action_mappings[this.current_id])();
-    this.command_executed = true;
+  show_prompt(creator) {
+    if(this.targets_registered) {
+      alert("this.current_id:" + this.current_id);
+      alert(this.id_action_mappings[this.current_id]);
+      (this.id_action_mappings[this.current_id])();
+      this.command_executed = true;
+
+      // Attach handler to execute command button
+      jQuery("#exec_command_btn").click(function() {
+        alert("pressed");
+        // Gather text from inputs
+        // Package with id of selected button
+        // send using dht_creator
+      });
+    }
   }
 
-  change_command(id) {
-    let command_changed = false;
-    if(id in this.id_action_mappings &&
-       id != this.current_id) {
-      this.current_id = id;
-      command_changed = true;
-      this.command_executed = false;
+  change_prompt(id) {
+    if(this.targets_registered) {
+      let command_changed = false;
+      if(id in this.id_action_mappings &&
+         id != this.current_id) {
+        this.current_id = id;
+        command_changed = true;
+        this.command_executed = false;
+      }
+      return command_changed;
     }
-    return command_changed;
   }
 }

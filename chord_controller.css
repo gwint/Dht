@@ -2,8 +2,12 @@ button {
   width: 100%;
 }
 
+.tuple_container {
+  width: 100%;
+}
+
 #exec_command_btn {
-  width: 20%;
+  width: 40%;
 }
 
 #command_prompt_area {

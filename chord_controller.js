@@ -6,32 +6,10 @@ jQuery(document).ready(function() {
   let command_manager = null;
 
   jQuery("#create_dht_btn").click(function() {
-    jQuery("#btn_response_area").text("DHT CREATED");
-    let dht_creation_signal_color = "red";
-    dht_creator.create_dht();
-
-    let show_dht_creation_res = function(creator) {
-      alert("state: " + creator.get_state());
-      if(creator.is_dht_created()) {
-        jQuery("#create_dht_btn").attr("disabled", true);
-        dht_creation_signal_color = "green";
-      }
-      else {
-        alert("Error: Could not connect to server!");
-        jQuery("#commit_host_port_tuples_btn").attr("disabled", false);
-        jQuery("#add_host_ip_tuple_btn").attr("disabled", false);
-        jQuery(".entry").attr("readonly", false);
-        jQuery(".entry").css("background-color", "white");
-      }
-      jQuery("#host_ip_tuple_panel").css("background-color",
-                                          dht_creation_signal_color);
-    }
-
-    //setTimeout(function() {
-    //  show_dht_creation_res(dht_creator);
-    //}, 2000);
+    let man_arr = [command_manager];
+    dht_creator.create_dht(man_arr);
+    //command_manager.register_targets("host_ip_tuple_entry_area");
   });
-
 
   jQuery("#add_port_btn").click(function() {
     let curr_contents = jQuery("#added_ports").text();
@@ -42,24 +20,25 @@ jQuery(document).ready(function() {
   });
 
   jQuery("#add_host_ip_tuple_btn").click(function() {
+    let container_open = '<div class="tuple_container">';
     let host_label = '<label for="host">IP:</label>';
     let host_entry = '<input class="host_entry entry" id="host" type="text"/>';
     let port_label = '<label for="port">Port:</label>';
     let port_entry = '<input class="port_entry entry" type="text"/>';
+    let container_close = '</div>';
 
-    html_str = host_label + host_entry + port_label +
-               port_entry + "<br>";
+    html_str = container_open + host_label + host_entry + port_label +
+               port_entry + container_close;
 
     jQuery("#host_ip_tuple_entry_area").append(html_str);
     jQuery("#commit_host_port_tuples_btn").attr("disabled", false);
   });
 
   jQuery("#commit_host_port_tuples_btn").click(function() {
-    //let host_ip_tuples = new Host_IP_Tuple_Collection();
     let hosts = [];
     let ports = [];
-    //loop through all hosts and ports
-    jQuery("#host_ip_tuple_entry_area").children().each(function() {
+
+    jQuery("#host_ip_tuple_entry_area input").each(function() {
       let has_classes = jQuery(this).attr("class") != undefined;
 
       if(has_classes) {
@@ -82,27 +61,25 @@ jQuery(document).ready(function() {
     jQuery("#commit_host_port_tuples_btn").attr("disabled", true);
     jQuery("#add_host_ip_tuple_btn").attr("disabled", true);
     jQuery("#create_dht_btn").attr("disabled", false);
-    // place into collection object
+
     for(let i = 0; i < hosts.length; i++) {
       host_ip_tuples.add_tuple(hosts[i], parseInt(ports[i], 10));
     }
     dht_creator = new Dht_Creator(host_ip_tuples);
-    dht_creator.connect();
   });
 
   jQuery(".command_btn").click(function() {
     alert("command button pressed");
-    if(dht_creator != null && dht_creator.is_dht_created()) {
-      jQuery(".command_btn").css("border-style", "outset");
-      jQuery(this).css("border-style", "inset");
 
-      let id = jQuery(this).attr("id");
-      if(command_manager != null &&
-         (!command_manager.has_command_executed() ||
-         (command_manager.get_curr_id() != id))) {
-        command_manager.change_command(id);
-        command_manager.execute_command();
-      }
+    jQuery(".command_btn").css("border-style", "outset");
+    jQuery(this).css("border-style", "inset");
+
+    let id = jQuery(this).attr("id");
+    if(command_manager != null &&
+       (!command_manager.has_command_executed() ||
+       (command_manager.get_curr_id() != id))) {
+      command_manager.change_prompt(id);
+      command_manager.show_prompt(dht_creator);
     }
   });
 
@@ -114,7 +91,6 @@ jQuery(document).ready(function() {
 
     let template = jQuery("#command_prompt_template").html();
     let btn_template = jQuery("#exec_command_btn_template").html();
-    alert(btn_template);
 
     let template_script = Handlebars.compile(template);
     let btn_script = Handlebars.compile(btn_template);
