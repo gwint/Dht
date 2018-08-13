@@ -49,10 +49,26 @@ class Command_Manager {
       this.command_executed = true;
 
       // Attach handler to execute command button
+      self = this;
       jQuery("#exec_command_btn").click(function() {
         alert("pressed");
-        // Gather text from inputs
-        // Package with id of selected button
+        let labels = [];
+        let values = [];
+        let command_data = {"command_id":self.current_id};
+        jQuery(".command_label").each(function() {
+          labels.push(jQuery(this).text());
+        });
+        jQuery(".command_input").each(function() {
+          values.push(jQuery(this).val());
+        });
+
+        alert(labels);
+        alert(values);
+        command_data["labels"] = labels;
+        command_data["values"] = values;
+
+        alert(command_data);
+
         // send using dht_creator
       });
     }

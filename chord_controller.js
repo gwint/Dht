@@ -1,5 +1,4 @@
 jQuery(document).ready(function() {
-
   let id_to_html_str_mappings = {};
   let host_ip_tuples = new Host_IP_Tuple_Collection();
   let dht_creator = null;
