@@ -26,6 +26,19 @@ class Dht_Creator {
     this.host_ip_tuples = null;
   }
 
+  send_data(data_str) {
+    this.socket = new WebSocket("ws://localhost:9999");
+
+    self = this;
+    this.socket.addEventListener('open', function(event) {
+      self.socket.send(data_str);
+    });
+
+    this.socket.addEventListener('error', function(event) {
+      alert("Error: Could not connect to server!");
+    });
+  }
+
   create_dht(manager_arr) {
     if(!this.created) {
       // Create WebSocket connection.

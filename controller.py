@@ -25,11 +25,12 @@ def create_nodes_file(port_list):
 async def control(websocket, path):
   ## Get port numbers from client
   port_list_str = await websocket.recv()
+  port_list = []
 
-  port_list = list(map(int, port_list_str.strip('[]').split(',')))
-  print(port_list)
-
-  create_nodes_file(port_list)
+  if port_list_str[0] == '[':
+    port_list = list(map(int, port_list_str.strip('[]').split(',')))
+  else:
+    print(port_list_str)
 
   for port in port_list:
     Popen(["python", "server.py"] + [str(port)])

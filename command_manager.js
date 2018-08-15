@@ -70,6 +70,7 @@ class Command_Manager {
         alert(command_data);
 
         // send using dht_creator
+        creator.send_data(JSON.stringify(command_data));
       });
     }
   }
