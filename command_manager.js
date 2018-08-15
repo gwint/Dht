@@ -13,6 +13,21 @@ class Command_Manager {
     this.targets_registered = false;
   }
 
+  get_target_info(id_str) {
+    let id = "#" + id_str;
+    let target_info = {};
+    jQuery(id).children().each(function() {
+      alert("inside");
+      if(jQuery(this).attr("id") == "port") {
+        target_info["port"] = jQuery(this).val();
+      }
+      if(jQuery(this).attr("id") == "host") {
+        target_info["host"] = jQuery(this).val();
+      }
+    });
+    return target_info;
+  }
+
   register_targets(parent_element_id) {
     let self = this;
     let curr_idx = 0;
@@ -66,9 +81,13 @@ class Command_Manager {
         alert(values);
         command_data["labels"] = labels;
         command_data["values"] = values;
+        let target_info =
+                 self.get_target_info(creator.get_current_target_id());
+        command_data["target"] = target_info;
+        alert(target_info["host"]);
+        alert(target_info["port"]);
 
         alert(command_data);
-
         // send using dht_creator
         creator.send_data(JSON.stringify(command_data));
       });

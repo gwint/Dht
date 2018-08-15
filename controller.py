@@ -9,6 +9,7 @@ import hashlib
 import base64
 import asyncio
 import websockets
+import json
 
 NODES_FILE = "nodes.txt"
 HOST = "localhost"
@@ -30,6 +31,7 @@ async def control(websocket, path):
   if port_list_str[0] == '[':
     port_list = list(map(int, port_list_str.strip('[]').split(',')))
   else:
+    print(type(json.loads(port_list_str)))
     print(port_list_str)
 
   for port in port_list:

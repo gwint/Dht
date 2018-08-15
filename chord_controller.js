@@ -23,7 +23,7 @@ jQuery(document).ready(function() {
     let host_label = '<label for="host">IP:</label>';
     let host_entry = '<input class="host_entry entry" id="host" type="text"/>';
     let port_label = '<label for="port">Port:</label>';
-    let port_entry = '<input class="port_entry entry" type="text"/>';
+    let port_entry = '<input class="port_entry entry" id="port" type="text"/>';
     let container_close = '</div>';
 
     html_str = container_open + host_label + host_entry + port_label +
