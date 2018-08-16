@@ -17,7 +17,6 @@ class Command_Manager {
     let id = "#" + id_str;
     let target_info = {};
     jQuery(id).children().each(function() {
-      alert("inside");
       if(jQuery(this).attr("id") == "port") {
         target_info["port"] = jQuery(this).val();
       }
@@ -58,15 +57,12 @@ class Command_Manager {
 
   show_prompt(creator) {
     if(this.targets_registered) {
-      alert("this.current_id:" + this.current_id);
-      alert(this.id_action_mappings[this.current_id]);
       (this.id_action_mappings[this.current_id])();
       this.command_executed = true;
 
       // Attach handler to execute command button
       self = this;
       jQuery("#exec_command_btn").click(function() {
-        alert("pressed");
         let labels = [];
         let values = [];
         let command_data = {"command_id":self.current_id};
@@ -77,18 +73,12 @@ class Command_Manager {
           values.push(jQuery(this).val());
         });
 
-        alert(labels);
-        alert(values);
         command_data["labels"] = labels;
         command_data["values"] = values;
         let target_info =
                  self.get_target_info(creator.get_current_target_id());
         command_data["target"] = target_info;
-        alert(target_info["host"]);
-        alert(target_info["port"]);
 
-        alert(command_data);
-        // send using dht_creator
         creator.send_data(JSON.stringify(command_data));
       });
     }

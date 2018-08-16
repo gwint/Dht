@@ -62,11 +62,9 @@ class Dht_Creator {
       let self = this;
       this.socket.addEventListener('open', function(event) {
         let ports = self.host_ip_tuples.get_ports();
-        alert(ports);
         this.created = true;
         // Send Json object containing port numbers
         self.socket.send(JSON.stringify(ports));
-        alert(this.created);
 
         // Show what success looks like
         jQuery("#create_dht_btn").attr("disabled", true);
@@ -76,7 +74,6 @@ class Dht_Creator {
           jQuery(".tuple_container").css("background-color", "grey");
           jQuery(event.currentTarget).css("background-color", "white");
           self.target_id = parseInt(jQuery(event.currentTarget).attr("id"));
-          alert(self.get_current_target_id());
         });
         manager_arr[0].register_targets("host_ip_tuple_entry_area");
       });

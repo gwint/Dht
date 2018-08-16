@@ -68,8 +68,6 @@ jQuery(document).ready(function() {
   });
 
   jQuery(".command_btn").click(function() {
-    alert("command button pressed");
-
     jQuery(".command_btn").css("border-style", "outset");
     jQuery(this).css("border-style", "inset");
 
