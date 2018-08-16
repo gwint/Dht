@@ -1,0 +1,5 @@
+- Remove alerts used for debugging purposes
+- Manual test to find current bugs
+- Investigate automated testing
+- Change read / write to work regardless of node targeted
+- Default target selected leads to invalid state (related to manual testing)
