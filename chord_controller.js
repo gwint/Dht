@@ -7,7 +7,11 @@ jQuery(document).ready(function() {
   jQuery("#create_dht_btn").click(function() {
     let man_arr = [command_manager];
     dht_creator.create_dht(man_arr);
-    //command_manager.register_targets("host_ip_tuple_entry_area");
+    // Draw circle on dht_drawing_area
+    let ctx = document.getElementById("drawing_pad").getContext("2d");
+    ctx.beginPath();
+    ctx.arc(100, 75, 50, 0, 2*Math.PI);
+    ctx.stroke();
   });
 
   jQuery("#add_port_btn").click(function() {

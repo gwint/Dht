@@ -61,25 +61,30 @@ class Command_Manager {
       this.command_executed = true;
 
       // Attach handler to execute command button
-      self = this;
+      let self = this;
       jQuery("#exec_command_btn").click(function() {
-        let labels = [];
-        let values = [];
-        let command_data = {"command_id":self.current_id};
-        jQuery(".command_label").each(function() {
-          labels.push(jQuery(this).text());
-        });
-        jQuery(".command_input").each(function() {
-          values.push(jQuery(this).val());
-        });
+        if(creator.get_current_target_id() != -1) {
+          let labels = [];
+          let values = [];
+          let command_data = {"command_id":self.current_id};
+          jQuery(".command_label").each(function() {
+            labels.push(jQuery(this).text());
+          });
+          jQuery(".command_input").each(function() {
+            values.push(jQuery(this).val());
+          });
 
-        command_data["labels"] = labels;
-        command_data["values"] = values;
-        let target_info =
+          command_data["labels"] = labels;
+          command_data["values"] = values;
+          let target_info =
                  self.get_target_info(creator.get_current_target_id());
-        command_data["target"] = target_info;
+          command_data["target"] = target_info;
 
-        creator.send_data(JSON.stringify(command_data));
+          creator.send_data(JSON.stringify(command_data));
+        }
+        else {
+          alert("Select a node on which to execute the command!");
+        }
       });
     }
   }

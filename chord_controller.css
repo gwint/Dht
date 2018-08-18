@@ -10,9 +10,15 @@ button {
   width: 40%;
 }
 
+#dht_drawing_area {
+  height: 60%;
+  width: 100%;
+}
+
 #command_prompt_area {
-  width: 30%;
+  width: 40%;
   clear: both;
+  height: 40%;
 }
 
 #command_prompt_area>input {
