@@ -21,6 +21,11 @@ button {
   height: 40%;
 }
 
+#drawing_pad {
+  width: 100%;
+  height: 100%;
+}
+
 #command_prompt_area>input {
   width: 100%;
   clear: both;

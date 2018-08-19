@@ -10,7 +10,9 @@ jQuery(document).ready(function() {
     // Draw circle on dht_drawing_area
     let ctx = document.getElementById("drawing_pad").getContext("2d");
     ctx.beginPath();
-    ctx.arc(100, 75, 50, 0, 2*Math.PI);
+    let center_x = document.getElementById("drawing_pad").width / 2;
+    let center_y = document.getElementById("drawing_pad").height / 2;
+    ctx.arc(center_x, center_y, 50, 0, 2*Math.PI);
     ctx.stroke();
   });
 
