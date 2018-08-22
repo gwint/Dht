@@ -26,7 +26,6 @@ NODES_FILE = "nodes.txt"
 HOST = "localhost"
 PORT = 9999
 
-
 def create_nodes_file(port_list):
   nodes_file_obj = open(NODES_FILE, 'w')
 
@@ -88,9 +87,8 @@ def main():
                       help="Ports on which to launch dht nodes")
   parser.add_argument('-wc', action="store_true",\
                       help="Use web client to submit ports")
-  args = parser.parse_args()
 
-  print(args.wc)
+  args = parser.parse_args()
 
   if(args.wc):
     start_server = websockets.serve(control, 'localhost', PORT)
