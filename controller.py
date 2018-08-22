@@ -10,6 +10,7 @@ import asyncio
 import websockets
 import json
 import glob
+import argparse
 sys.path.append('gen-py')
 sys.path.insert(0, glob.glob('/usr/lib/python2.7/site-packages')[0])
 
@@ -40,19 +41,23 @@ def generate_node_file(host_port_pairs):
     node_file_obj.write("%s:%d\n" % (host, port))
   node_file_obj.close()
 
-async def control(websocket, path):
+def start_nodes(port_list):
+  for port in port_list:
+    Popen(["python", "server.py"] + [str(port)])
+
+  ## Generate nodes.txt given list of ports and hosts
+  generate_node_file([("127.0.0.1", port) for port in port_list])
+  ## Then run init.py to populate finger tables
+  Popen(["python", "init.py", NODES_FILE])
+
+async def control(websocket, path, cmd_line_ports=[]):
   ## Get port numbers from client
   item_str = await websocket.recv()
   port_list = []
 
   if item_str[0] == '[':
     port_list = list(map(int, item_str.strip('[]').split(',')))
-    for port in port_list:
-      Popen(["python", "server.py"] + [str(port)])
-    ## Generate nodes.txt given list of ports and hosts
-    generate_node_file([("127.0.0.1", port) for port in port_list])
-    ## Then run init.py to populate finger tables
-    Popen(["python", "init.py", NODES_FILE])
+    start_nodes(port_list)
   else:
     command_obj = json.loads(item_str)
     print(command_obj)
@@ -78,9 +83,20 @@ async def control(websocket, path):
       client.readFile(command_args["File Name:"], command_args["Owner:"])
 
 def main():
-  start_server = websockets.serve(control, 'localhost', PORT)
+  parser = argparse.ArgumentParser(description='Launch DHT nodes.')
+  parser.add_argument("ports", metavar="Port", type=int, nargs='*',\
+                      help="Ports on which to launch dht nodes")
+  parser.add_argument('-wc', action="store_true",\
+                      help="Use web client to submit ports")
+  args = parser.parse_args()
 
-  asyncio.get_event_loop().run_until_complete(start_server)
-  asyncio.get_event_loop().run_forever()
+  print(args.wc)
+
+  if(args.wc):
+    start_server = websockets.serve(control, 'localhost', PORT)
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
+  else:
+    start_nodes(args.ports)
 
 main()
