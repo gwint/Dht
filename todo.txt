@@ -1,3 +1,2 @@
 - Manual test to find current bugs
 - Investigate automated testing
-- Solidify format for command data coming from web-client
