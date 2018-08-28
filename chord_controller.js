@@ -86,7 +86,7 @@ jQuery(document).ready(function() {
     }
   });
 
-  jQuery.get("command_prompt_template.html #command_prompt_template", function(data) {
+  jQuery.get("Command_Controller/command_prompt_template.html #command_prompt_template", function(data) {
     jQuery("head").append(data);
     let replace_command_prompt = function(parent, html_str) {
       jQuery(parent).html(html_str);
