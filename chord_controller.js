@@ -4,9 +4,43 @@ jQuery(document).ready(function() {
   let dht_creator = null;
   let command_manager = null;
 
+
   jQuery("#create_dht_btn").click(function() {
+    // Temporary location for code from commit button onclick function
+    // since that is being removed, will be moved during remodeling
+    let hosts = [];
+    let ports = [];
+
+    jQuery("#host_ip_tuple_entry_area input").each(function() {
+      let has_classes = jQuery(this).attr("class") != undefined;
+
+      if(has_classes) {
+        let class_list = jQuery(this).attr("class").split(" ");
+        for(let idx in class_list) {
+          class_name = class_list[idx];
+          if(class_name == "host_entry") {
+            hosts.push(jQuery(this).val());
+            jQuery(this).css("background-color", "grey");
+            jQuery(this).attr("readonly", true);
+          }
+          if(class_name == "port_entry") {
+            ports.push(jQuery(this).val());
+            jQuery(this).css("background-color", "grey");
+            jQuery(this).attr("readonly", true);
+          }
+        }
+      }
+    });
+    jQuery("#create_dht_btn").attr("disabled", false);
+
+    for(let i = 0; i < hosts.length; i++) {
+      host_ip_tuples.add_tuple(hosts[i], parseInt(ports[i], 10));
+    }
+    dht_creator = new Dht_Creator(host_ip_tuples);
+
     let man_arr = [command_manager];
     dht_creator.create_dht(man_arr);
+
     // Draw circle on dht_drawing_area
     let ctx = document.getElementById("drawing_pad").getContext("2d");
     ctx.beginPath();
@@ -37,40 +71,25 @@ jQuery(document).ready(function() {
 
     jQuery("#host_ip_tuple_entry_area").append(html_str);
     jQuery("#commit_host_port_tuples_btn").attr("disabled", false);
-  });
 
-  jQuery("#commit_host_port_tuples_btn").click(function() {
-    let hosts = [];
-    let ports = [];
-
-    jQuery("#host_ip_tuple_entry_area input").each(function() {
-      let has_classes = jQuery(this).attr("class") != undefined;
-
-      if(has_classes) {
-        let class_list = jQuery(this).attr("class").split(" ");
-        for(let idx in class_list) {
-          class_name = class_list[idx];
-          if(class_name == "host_entry") {
-            hosts.push(jQuery(this).val());
-            jQuery(this).css("background-color", "grey");
-            jQuery(this).attr("readonly", true);
+    jQuery("#host_ip_tuple_entry_area input").change(function() {
+      // Test for empty cells if any are empty, button should be disabled
+      let is_any_empty = function() {
+        let empty = false;
+        jQuery("#host_ip_tuple_entry_area input").each(function() {
+          if(jQuery(this).val() === "") {
+            empty = true;
           }
-          if(class_name == "port_entry") {
-            ports.push(jQuery(this).val());
-            jQuery(this).css("background-color", "grey");
-            jQuery(this).attr("readonly", true);
-          }
-        }
+        });
+        return empty;
+      };
+      if(is_any_empty()) {
+        jQuery("#create_dht_btn").attr("disabled", true);
+      }
+      else {
+        jQuery("#create_dht_btn").attr("disabled", false);
       }
     });
-    jQuery("#commit_host_port_tuples_btn").attr("disabled", true);
-    jQuery("#add_host_ip_tuple_btn").attr("disabled", true);
-    jQuery("#create_dht_btn").attr("disabled", false);
-
-    for(let i = 0; i < hosts.length; i++) {
-      host_ip_tuples.add_tuple(hosts[i], parseInt(ports[i], 10));
-    }
-    dht_creator = new Dht_Creator(host_ip_tuples);
   });
 
   jQuery(".command_btn").click(function() {
