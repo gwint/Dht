@@ -2,52 +2,20 @@ jQuery(document).ready(function() {
   let id_to_html_str_mappings = {};
   let host_ip_tuples = new Host_IP_Tuple_Collection();
   let dht_creator = null;
-  let command_manager = null;
-
+  let command_manager =
+            new Command_Manager({"read_btn":"read_command_prompt",
+                                 "write_btn":"write_command_prompt"},
+                                 "prompt_area");
+  let illustrator = null;
 
   jQuery("#create_dht_btn").click(function() {
-    // Temporary location for code from commit button onclick function
-    // since that is being removed, will be moved during remodeling
-    let hosts = [];
-    let ports = [];
-
-    jQuery("#host_ip_tuple_entry_area input").each(function() {
-      let has_classes = jQuery(this).attr("class") != undefined;
-
-      if(has_classes) {
-        let class_list = jQuery(this).attr("class").split(" ");
-        for(let idx in class_list) {
-          class_name = class_list[idx];
-          if(class_name == "host_entry") {
-            hosts.push(jQuery(this).val());
-            jQuery(this).css("background-color", "grey");
-            jQuery(this).attr("readonly", true);
-          }
-          if(class_name == "port_entry") {
-            ports.push(jQuery(this).val());
-            jQuery(this).css("background-color", "grey");
-            jQuery(this).attr("readonly", true);
-          }
-        }
-      }
-    });
-    jQuery("#create_dht_btn").attr("disabled", false);
-
-    for(let i = 0; i < hosts.length; i++) {
-      host_ip_tuples.add_tuple(hosts[i], parseInt(ports[i], 10));
-    }
+    host_ip_tuples.get_host_port_tuples();
     dht_creator = new Dht_Creator(host_ip_tuples);
 
     let man_arr = [command_manager];
     dht_creator.create_dht(man_arr);
+    command_manager.register_targets("host_ip_tuple_entry_area");
 
-    // Draw circle on dht_drawing_area
-    let ctx = document.getElementById("drawing_pad").getContext("2d");
-    ctx.beginPath();
-    let center_x = document.getElementById("drawing_pad").width / 2;
-    let center_y = document.getElementById("drawing_pad").height / 2;
-    ctx.arc(center_x, center_y, 50, 0, 2*Math.PI);
-    ctx.stroke();
   });
 
   jQuery("#add_port_btn").click(function() {
@@ -73,8 +41,7 @@ jQuery(document).ready(function() {
     jQuery("#commit_host_port_tuples_btn").attr("disabled", false);
 
     jQuery("#host_ip_tuple_entry_area input").change(function() {
-      // Test for empty cells if any are empty, button should be disabled
-      let is_any_empty = function() {
+      let is_any_input_field_empty = function() {
         let empty = false;
         jQuery("#host_ip_tuple_entry_area input").each(function() {
           if(jQuery(this).val() === "") {
@@ -83,7 +50,7 @@ jQuery(document).ready(function() {
         });
         return empty;
       };
-      if(is_any_empty()) {
+      if(is_any_input_field_empty()) {
         jQuery("#create_dht_btn").attr("disabled", true);
       }
       else {
@@ -93,60 +60,40 @@ jQuery(document).ready(function() {
   });
 
   jQuery(".command_btn").click(function() {
-    jQuery(".command_btn").css("border-style", "outset");
-    jQuery(this).css("border-style", "inset");
+    jQuery(".command_btn").removeClass("pressed_btn");
+    jQuery(this).addClass("pressed_btn");
 
-    let id = jQuery(this).attr("id");
+    let pressed_command_btn_id = jQuery(document.activeElement).attr("id");
+
     if(command_manager != null &&
-       (!command_manager.has_command_executed() ||
-       (command_manager.get_curr_id() != id))) {
-      command_manager.change_prompt(id);
-      command_manager.show_prompt(dht_creator);
+       (!command_manager.is_current_prompt_displayed() ||
+       (command_manager.get_curr_id() != pressed_command_btn_id))) {
+      command_manager.change_prompt(pressed_command_btn_id);
     }
   });
 
-  jQuery.get("Command_Controller/command_prompt_template.html #command_prompt_template", function(data) {
-    jQuery("head").append(data);
-    let replace_command_prompt = function(parent, html_str) {
-      jQuery(parent).html(html_str);
-    };
+  jQuery(".exec_command_btn").click(function() {
+    if(dht_creator.get_current_target_id() != -1) {
+      let labels = [];
+      let values = [];
+      let command_data = {"command_id":self.current_id};
+      jQuery(".command_label").each(function() {
+        labels.push(jQuery(this).text());
+      });
+      jQuery(".command_input").each(function() {
+        values.push(jQuery(this).val());
+      });
 
-    let template = jQuery("#command_prompt_template").html();
-    let btn_template = jQuery("#exec_command_btn_template").html();
+      command_data["labels"] = labels;
+      command_data["values"] = values;
+      let target_info =
+             self.get_target_info(dht_creator.get_current_target_id());
+      command_data["target"] = target_info;
 
-    let template_script = Handlebars.compile(template);
-    let btn_script = Handlebars.compile(btn_template);
-
-    let add_btn_context = [{"label":"Host:"},
-                           {"label":"Port:"},
-                           {"btn_text":"Add Node"}];
-    let read_data_context = [{"label":"File Name:"},
-                             {"label":"Owner:"},
-                             {"btn_text":"Read Data"}];
-    let write_data_context = [{"label":"File:"},
-                              {"label":"Owner:"},
-                              {"label":"Contents:"},
-                              {"btn_text":"Write Data"}];
-
-    id_to_html_str_mappings["add_btn"] = function() {
-      let html_str = template_script(add_btn_context[0]) + "<br>" +
-                     template_script(add_btn_context[1]) + "<br>" +
-                     btn_script(add_btn_context[2]);
-      replace_command_prompt("#command_prompt_area", html_str);
-    };
-    id_to_html_str_mappings["read_btn"] = function() {
-      let html_str = template_script(read_data_context[0]) + "<br>" +
-                     template_script(read_data_context[1]) + "<br>" +
-                     btn_script(read_data_context[2]);
-      replace_command_prompt("#command_prompt_area", html_str);
-    };
-    id_to_html_str_mappings["write_btn"] = function() {
-      let html_str = template_script(write_data_context[0]) + "<br>" +
-                     template_script(write_data_context[1]) + "<br>" +
-                     template_script(write_data_context[2]) + "<br>" +
-                     btn_script(write_data_context[3]);
-      replace_command_prompt("#command_prompt_area", html_str);
-    };
-    command_manager = new Command_Manager(id_to_html_str_mappings);
+      dht_creator.send_data(JSON.stringify(command_data));
+    }
+    else {
+      alert("Select a node on which to execute the command!");
+    }
   });
 });

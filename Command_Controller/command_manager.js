@@ -1,16 +1,10 @@
 class Command_Manager {
-  constructor(id_action_mappings) {
-    this.id_action_mappings = id_action_mappings;
-    this.command_executed = false;
-    this.current_id = function(command_mappings) {
-      let first_id = null;
-      if((Object.keys(command_mappings)).length > 0) {
-        first_id = (Object.keys(command_mappings)).shift();
-      }
-      return first_id;
-    }(id_action_mappings);
-    this.curr_ip_host_tuple_idx = -1;
+  constructor(button_id_to_prompt_mapping, prompt_areas_common_class) {
+    this.button_id_to_prompt_mapping = button_id_to_prompt_mapping;
+    this.prompt_currently_displayed = false;
+    this.current_id = 0;
     this.targets_registered = false;
+    this.common_class = prompt_areas_common_class;
   }
 
   get_target_info(id_str) {
@@ -38,65 +32,23 @@ class Command_Manager {
     this.targets_registered = true;
   }
 
-  unregister_targets(parent_element_id) {
-    let self = this;
-    let id = "#" + parent_element_id;
-    jQuery(id).children().each(function() {
-      jQuery(this).removeAttr("id");
-    });
-    this.targets_registered = false;
-  }
-
-  has_command_executed() {
-    return this.command_executed;
+  is_current_prompt_displayed() {
+    return this.prompt_currently_displayed;
   }
 
   get_curr_id() {
     return this.current_id;
   }
 
-  show_prompt(creator) {
-    if(this.targets_registered) {
-      (this.id_action_mappings[this.current_id])();
-      this.command_executed = true;
-
-      // Attach handler to execute command button
-      let self = this;
-      jQuery("#exec_command_btn").click(function() {
-        if(creator.get_current_target_id() != -1) {
-          let labels = [];
-          let values = [];
-          let command_data = {"command_id":self.current_id};
-          jQuery(".command_label").each(function() {
-            labels.push(jQuery(this).text());
-          });
-          jQuery(".command_input").each(function() {
-            values.push(jQuery(this).val());
-          });
-
-          command_data["labels"] = labels;
-          command_data["values"] = values;
-          let target_info =
-                 self.get_target_info(creator.get_current_target_id());
-          command_data["target"] = target_info;
-
-          creator.send_data(JSON.stringify(command_data));
-        }
-        else {
-          alert("Select a node on which to execute the command!");
-        }
-      });
-    }
-  }
-
   change_prompt(id) {
     if(this.targets_registered) {
       let command_changed = false;
-      if(id in this.id_action_mappings &&
-         id != this.current_id) {
+      if(id in this.button_id_to_prompt_mapping) {
         this.current_id = id;
-        command_changed = true;
-        this.command_executed = false;
+        this.prompt_currently_displayed = false;
+        let prompt_area_id = this.button_id_to_prompt_mapping[id];
+        jQuery("." + this.common_class).addClass("prompt_na");
+        jQuery("#" + prompt_area_id).removeClass("prompt_na");
       }
       return command_changed;
     }

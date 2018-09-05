@@ -6,7 +6,7 @@ button {
   width: 100%;
 }
 
-#exec_command_btn {
+.exec_command_btn {
   width: 40%;
 }
 
@@ -24,11 +24,6 @@ button {
 #drawing_pad {
   width: 100%;
   height: 100%;
-}
-
-#command_prompt_area>input {
-  width: 100%;
-  clear: both;
 }
 
 #add_new_node_btn {
@@ -54,7 +49,6 @@ button {
 #host_ip_tuple_panel {
   width: 29%;
   height: 89%;
-  background-color: white;
   border-style: solid;
   border-left-style: none;
   border-bottom-style: none;
@@ -89,4 +83,39 @@ button {
 
 input {
   width: 30%;
+}
+
+.successful_creation {
+  background-color: green;
+}
+
+.unsuccessful_creation {
+  background-color: red;
+}
+
+.selected_tuple {
+  background-color: white;
+}
+
+.unselected_tuple {
+  background-color: grey;
+}
+
+.pressed_btn {
+  border-style: inset;
+}
+
+.current_command {
+  width: 100%;
+  clear: both;  
+}
+
+.prompt_na {
+  display: none !important;
+}
+
+.prompt_area > input {
+  display: block;
+  clear: both;
+  width: 100%;
 }

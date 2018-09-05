@@ -7,6 +7,7 @@
   <script src="Connection_Controller/host_ip_tuple_collection.js"></script>
   <script src="Connection_Controller/dht_creator.js"></script>
   <script src="chord_controller.js"></script>
+  <script src="Illustrator/illustrator.js"></script>
   <link rel="stylesheet" href="Styles/chord_controller.css">
 </head>
 <body>
@@ -39,6 +40,20 @@
         </div>
       </div>
       <div id="command_prompt_area">
+        <div id="write_command_prompt" class="prompt_na prompt_area">
+          <label class="command_label">Owner</label>
+          <input type="text" class="command_input">
+          <label class="command_label">File Name</label>
+          <input type="text" class="command_input">
+          <button class="exec_command_btn">Write Data</button>
+        </div>
+        <div id="read_command_prompt" class="prompt_na prompt_area">
+          <label class="command_label">Owner</label>
+          <input type="text" class="command_input">
+          <label class="command_label">File Name</label>
+          <input type="text" class="command_input">
+          <button class="exec_command_btn">Read Data</button>          
+        </div>
       </div>
       <div id="dht_drawing_area">
         <canvas id="drawing_pad">

@@ -55,7 +55,7 @@ class Dht_Creator {
         jQuery("#add_host_ip_tuple_btn").attr("disabled", false);
         jQuery(".entry").attr("readonly", false);
         jQuery(".entry").css("background-color", "white");
-        jQuery("#host_ip_tuple_panel").css("background-color", "red");
+        jQuery("#host_ip_tuple_panel").addClass("unsuccessful_creation");
       });
 
       // Connection opened
@@ -68,8 +68,9 @@ class Dht_Creator {
 
         // Show what success looks like
         jQuery("#create_dht_btn").attr("disabled", true);
-        jQuery("#host_ip_tuple_panel").css("background-color", "green");
+        jQuery("#host_ip_tuple_panel").addClass("successful_creation");
         jQuery("#btn_response_area").text("DHT CREATED");
+        alert(jQuery("#host_ip_tuple_panel").hasClass("successful_creation"));
         jQuery(".tuple_container").click(function(event) {
           jQuery(".tuple_container").css("background-color", "grey");
           jQuery(event.currentTarget).css("background-color", "white");
